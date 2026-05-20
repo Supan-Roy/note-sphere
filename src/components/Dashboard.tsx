@@ -69,7 +69,7 @@ const DUMMY_NOTES: Note[] = [
   }
 ];
 
-export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewNotes, onNavigate, title = "Welcome back, Supan" }: { notes: Note[], onNoteOpen: (note: Note) => void, onChatOpen: (id: string) => void, onCreateNote: () => void, onViewNotes: () => void, onNavigate?: (tab: string) => void, title?: string }) {
+export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewNotes, onNavigate, onDeleteNote, title = "Welcome back, Supan" }: { notes: Note[], onNoteOpen: (note: Note) => void, onChatOpen: (id: string) => void, onCreateNote: () => void, onViewNotes: () => void, onNavigate?: (tab: string) => void, onDeleteNote?: (id: string) => void, title?: string }) {
   // If we have real notes, we only show real ones. 
   // If we have zero notes, we show dummy notes ONLY on the main dashboard overview.
   // In "My Notes", if we have zero, we show an empty state.
@@ -156,10 +156,17 @@ export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewN
           <div className="flex flex-wrap gap-3">
             <button
               onClick={onCreateNote}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition-all"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-sm px-5 py-3 text-sm font-semibold text-[var(--text-main)] hover:bg-white/10 transition-all"
             >
               <PenLine className="w-4 h-4" />
               Create Note
+            </button>
+            <button
+              onClick={() => onNavigate ? onNavigate('upload') : undefined}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-sm px-4 py-3 text-sm font-semibold text-[var(--text-main)] hover:bg-white/10 transition-all"
+            >
+              <UploadCloud className="w-4 h-4" />
+              Upload
             </button>
             <button
               onClick={onViewNotes}
@@ -184,7 +191,23 @@ export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewN
           {!isMyNotes && <button onClick={onViewNotes} className="text-sm font-bold text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1">Open Notes <ArrowRight className="w-4 h-4" /></button>}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+        {isMyNotes ? (
+          <div>
+            {displayNotes.length === 0 ? (
+              <div className="glass-card p-8 border border-white/5 text-center">
+                <h3 className="text-xl font-bold text-[var(--text-main)]">No notes yet</h3>
+                <p className="text-[var(--text-dim)]">You don't have any saved notes. Use Create Note or Upload to add notes to My Notes.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                {displayNotes.map((note) => (
+                  <NoteCard key={note.id} note={note} onOpen={onNoteOpen} onChat={() => onChatOpen(note.id)} onDelete={() => onDeleteNote ? onDeleteNote(note.id) : undefined} />
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {featureCards.map((feature) => {
             const Icon = feature.icon;
             return (
@@ -219,6 +242,7 @@ export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewN
             );
           })}
         </div>
+        )}
       </section>
     </div>
   );

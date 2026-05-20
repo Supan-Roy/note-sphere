@@ -23,6 +23,7 @@ import { Footer } from "./components/Footer";
 import { Note, Room, Semester, TaskItem } from "./types";
 
 export default function App() {
+  const currentUserId = "user1";
   const [activeTab, setActiveTab] = useState("dashboard");
   const readSidebarPreference = () => {
     try {
@@ -177,14 +178,14 @@ export default function App() {
     }
 
     if (selectedRoom) {
-      return <RoomDetail room={selectedRoom} onBack={() => setSelectedRoom(null)} onUpdateRoom={updateRoom} />;
+      return <RoomDetail room={selectedRoom} onBack={() => setSelectedRoom(null)} onUpdateRoom={updateRoom} currentUserId={currentUserId} />;
     }
 
     switch (activeTab) {
       case "dashboard":
-      return <Dashboard notes={notes} onNoteOpen={(note) => setSelectedNote(note)} onChatOpen={handleStartChat} onCreateNote={() => setActiveTab("create-note")} onViewNotes={() => setActiveTab("my-notes")} onNavigate={(tab) => setActiveTab(tab)} />;
+      return <Dashboard notes={notes} onNoteOpen={(note) => setSelectedNote(note)} onChatOpen={handleStartChat} onCreateNote={() => setActiveTab("create-note")} onViewNotes={() => setActiveTab("my-notes")} onNavigate={(tab) => setActiveTab(tab)} onDeleteNote={(id) => { setNotes(prev => prev.filter(n => n.id !== id)); if (selectedNote?.id === id) setSelectedNote(null); }} />;
       case "my-notes":
-      return <Dashboard notes={notes} onNoteOpen={(note) => setSelectedNote(note)} onChatOpen={handleStartChat} onCreateNote={() => setActiveTab("create-note")} onViewNotes={() => setActiveTab("my-notes")} onNavigate={(tab) => setActiveTab(tab)} title="My Notes" />;
+      return <Dashboard notes={notes} onNoteOpen={(note) => setSelectedNote(note)} onChatOpen={handleStartChat} onCreateNote={() => setActiveTab("create-note")} onViewNotes={() => setActiveTab("my-notes")} onNavigate={(tab) => setActiveTab(tab)} onDeleteNote={(id) => { setNotes(prev => prev.filter(n => n.id !== id)); if (selectedNote?.id === id) setSelectedNote(null); }} title="My Notes" />;
       case "upload":
         return <UploadCenter onSaveNote={(newNote) => setNotes(prev => [newNote, ...prev])} onGoToChat={handleStartChat} />;
       case "create-note":
@@ -240,7 +241,6 @@ export default function App() {
             <Topbar
               isDarkMode={isDarkMode}
               toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
-              onUpload={() => setActiveTab("upload")}
               onToggleSidebar={() => setIsSidebarCollapsed(prev => !prev)}
               isSidebarCollapsed={isSidebarCollapsed}
               isMobileScreen={isMobileScreen}

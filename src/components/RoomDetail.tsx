@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Room, Quiz, QuizQuestion } from "../types";
 
-export function RoomDetail({ room, onBack, onUpdateRoom }: { room: Room, onBack: () => void, onUpdateRoom: (room: Room) => void }) {
+export function RoomDetail({ room, onBack, onUpdateRoom, currentUserId }: { room: Room, onBack: () => void, onUpdateRoom: (room: Room) => void, currentUserId?: string }) {
   const [activeTab, setActiveTab] = useState<"feed" | "quiz" | "chat">("feed");
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -228,15 +228,20 @@ export function RoomDetail({ room, onBack, onUpdateRoom }: { room: Room, onBack:
                    <span className="text-[10px] font-bold text-indigo-400 px-1.5 py-0.5 bg-indigo-500/10 rounded">5 New</span>
                 </div>
                 <div className="space-y-3">
-                   {room.members.map((m, i) => (
-                     <div key={i} className="flex items-center gap-2 group cursor-pointer">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 border border-white/10 flex items-center justify-center text-[10px] font-bold group-hover:scale-110 transition-transform">
-                           {m.toUpperCase()}
-                        </div>
-                        <span className="text-xs text-[var(--text-dim)] group-hover:text-[var(--text-main)] transition-colors">User_{m}</span>
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-auto animate-pulse"></div>
-                     </div>
-                   ))}
+                   {room.members.map((m, i) => {
+                     const isCurrent = m === currentUserId;
+                     const avatarText = isCurrent ? 'You' : String(m).slice(0,2).toUpperCase();
+                     const displayName = isCurrent ? 'You' : `User_${m}`;
+                     return (
+                       <div key={i} className="flex items-center gap-2 group cursor-pointer">
+                          <div className={`w-8 h-8 rounded-full ${isCurrent ? 'ring-2 ring-emerald-400' : 'bg-gradient-to-br from-indigo-500 to-purple-500'} border border-white/10 flex items-center justify-center text-[10px] font-bold group-hover:scale-110 transition-transform`}>
+                             {avatarText}
+                          </div>
+                          <span className={`${isCurrent ? 'text-[var(--text-main)] font-semibold' : 'text-[var(--text-dim)]'} text-xs group-hover:text-[var(--text-main)] transition-colors`}>{displayName}</span>
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-auto animate-pulse"></div>
+                       </div>
+                     );
+                   })}
                 </div>
             </div>
          </aside>

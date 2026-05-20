@@ -1,15 +1,16 @@
 import { motion } from "motion/react";
-import { FileType, MoreVertical, Heart, Bookmark, MessageSquare, ArrowUpRight, MessageSquareText } from "lucide-react";
+import { FileType, MoreVertical, Heart, Bookmark, MessageSquare, ArrowUpRight, MessageSquareText, Trash2 } from "lucide-react";
 import { Note } from "../types";
 
 interface NoteCardProps {
   note: Note;
   onOpen: (note: Note) => void;
   onChat?: () => void;
+  onDelete?: () => void;
   key?: string;
 }
 
-export function NoteCard({ note, onOpen, onChat }: NoteCardProps) {
+export function NoteCard({ note, onOpen, onChat, onDelete }: NoteCardProps) {
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-emerald-400";
     if (score >= 60) return "text-yellow-400";
@@ -87,10 +88,21 @@ export function NoteCard({ note, onOpen, onChat }: NoteCardProps) {
             </button>
           )}
         </div>
-        <button className="flex items-center gap-1 text-xs font-bold text-indigo-400 hover:text-indigo-300">
-          Open Details
-          <ArrowUpRight className="w-3 h-3" />
-        </button>
+          <div className="flex items-center gap-3">
+            <button className="flex items-center gap-1 text-xs font-bold text-indigo-400 hover:text-indigo-300">
+              Open Details
+              <ArrowUpRight className="w-3 h-3" />
+            </button>
+            {onDelete && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                className="flex items-center gap-1 text-xs font-bold text-rose-400 hover:text-rose-300"
+                title="Delete note"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
       </div>
     </motion.div>
   );

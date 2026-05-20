@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { ArrowLeft, Cloud, Download, Link2, Sparkles, PenSquare, FileText } from "lucide-react";
 import { Note } from "../types";
 
@@ -29,7 +29,8 @@ function summarize(content: string) {
 
 export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerProps) {
   const [title, setTitle] = useState("Untitled Note");
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(""); // HTML content from editor
+  const editorRef = useRef<HTMLDivElement | null>(null);
   const [savedNote, setSavedNote] = useState<Note | null>(null);
   const [shareState, setShareState] = useState<string>("");
 
@@ -40,7 +41,7 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
   }, [title]);
 
   const saveToDevice = () => {
-    const text = `${title.trim() || "Untitled Note"}\n\n${content}`;
+    const text = `${title.trim() || "Untitled Note"}\n\n${editorRef.current ? editorRef.current.innerText : content}`;
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -64,8 +65,8 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
       ownerId: "user1",
       ownerName: "Supan",
       type: "text",
-      content: content,
-      rawText: content,
+      content: editorRef.current ? editorRef.current.innerHTML : content,
+      rawText: editorRef.current ? editorRef.current.innerText : content,
       tags: deriveTags(title, content),
       isPublic: false,
       category: "Personal",
@@ -98,8 +99,8 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
       ownerId: "user1",
       ownerName: "Supan",
       type: "text" as const,
-      content,
-      rawText: content,
+      content: editorRef.current ? editorRef.current.innerHTML : content,
+      rawText: editorRef.current ? editorRef.current.innerText : content,
       tags: deriveTags(title, content),
       isPublic: false,
       category: "Personal",
@@ -169,10 +170,25 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-dim)] mb-2">Editor</label>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Start writing your note here..."
+
+              <div className="flex items-center gap-2 mb-3">
+                <button type="button" onClick={() => document.execCommand('bold')} className="px-3 py-1 rounded-md bg-white/5 border border-white/5 text-sm">Bold</button>
+                <button type="button" onClick={() => document.execCommand('italic')} className="px-3 py-1 rounded-md bg-white/5 border border-white/5 text-sm">Italic</button>
+                <button type="button" onClick={() => document.execCommand('insertOrderedList')} className="px-3 py-1 rounded-md bg-white/5 border border-white/5 text-sm">Numbered</button>
+                <button type="button" onClick={() => document.execCommand('insertUnorderedList')} className="px-3 py-1 rounded-md bg-white/5 border border-white/5 text-sm">Bullets</button>
+                <select defaultValue="p" onChange={(e) => document.execCommand('formatBlock', false, e.target.value)} className="bg-white/5 border border-white/5 text-sm rounded-md px-2 py-1">
+                  <option value="p">Text</option>
+                  <option value="h3">Large</option>
+                  <option value="h4">Medium</option>
+                </select>
+              </div>
+
+              <div
+                ref={(el) => { if (el) editorRef.current = el; }}
+                contentEditable
+                role="textbox"
+                suppressContentEditableWarning
+                onInput={() => setContent(editorRef.current ? editorRef.current.innerHTML : "")}
                 className="min-h-[380px] w-full rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-[var(--text-main)] placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-y leading-7"
               />
             </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, Search, Upload, Bell, ChevronDown, Sun, Moon, User } from "lucide-react";
+import { Menu, Search, Bell, ChevronDown, Sun, Moon, User } from "lucide-react";
 
-export function Topbar({ isDarkMode, toggleDarkMode, onUpload, onToggleSidebar, isSidebarCollapsed, isMobileScreen }: { isDarkMode: boolean, toggleDarkMode: () => void, onUpload: () => void, onToggleSidebar: () => void, isSidebarCollapsed: boolean, isMobileScreen: boolean }) {
+export function Topbar({ isDarkMode, toggleDarkMode, onToggleSidebar, isSidebarCollapsed, isMobileScreen }: { isDarkMode: boolean, toggleDarkMode: () => void, onToggleSidebar: () => void, isSidebarCollapsed: boolean, isMobileScreen: boolean }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showLoginNotice, setShowLoginNotice] = useState(false);
   const profileButtonRef = useRef<HTMLButtonElement>(null);
@@ -77,10 +77,7 @@ export function Topbar({ isDarkMode, toggleDarkMode, onUpload, onToggleSidebar, 
           <span className="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full border-2 border-[var(--bg-main)]"></span>
         </button>
 
-        <button onClick={onUpload} className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(59,130,246,0.22)] hover:scale-[1.02] active:scale-[0.98] transition-all">
-          <Upload className="w-4 h-4" />
-          <span>Upload</span>
-        </button>
+        {/* Upload button moved to Dashboard header */}
 
         <div className="h-4 w-px bg-[var(--border-main)] mx-2"></div>
 
