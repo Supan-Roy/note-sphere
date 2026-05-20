@@ -272,7 +272,7 @@ export function RoomDetail({ room, onBack, onUpdateRoom }: { room: Room, onBack:
                           {subRooms.map(sr => (
                             <motion.button
                               whileHover={{ scale: 1.02 }}
-                              whileActive={{ scale: 0.98 }}
+                              whileTap={{ scale: 0.98 }}
                               key={sr.id}
                               className="glass-card p-4 text-left border-indigo-500/10 hover:border-indigo-500/30 transition-all group"
                             >

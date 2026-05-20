@@ -129,7 +129,7 @@ export function SemesterBuilder({ semesters, setSemesters }: { semesters: Semest
         <div className="space-y-2">
           <h1 className="text-4xl font-bold text-[var(--text-main)] flex items-center gap-3">
             <LayoutGrid className="w-10 h-10 text-indigo-400" />
-            AI Semester Builder
+            AI Manage Semesters
           </h1>
           <p className="text-[var(--text-dim)]">Organize your academic journey with manual control or AI routine parsing.</p>
         </div>

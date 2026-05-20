@@ -4,6 +4,7 @@ import { MessageSquare, X, Send, Sparkles, Loader2, Minus } from "lucide-react";
 
 export function FloatingAI() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(true);
   const [messages, setMessages] = useState<{role: string, content: string}[]>([
     { role: "assistant", content: "Hi! I'm Note Sphere AI. Ask me anything about your studies or notes." }
   ]);
@@ -135,15 +136,21 @@ export function FloatingAI() {
       <motion.button 
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          setShowPrompt(false);
+        }}
         id="chat-toggle"
-        className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${
+        className={`rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${
           isOpen 
-            ? 'bg-white/5 text-[var(--text-dim)] border border-[var(--border-main)] rotate-90' 
-            : 'bg-red-600 text-white shadow-red-600/40'
+            ? 'bg-white/5 text-[var(--text-dim)] border border-[var(--border-main)] rotate-90 w-14 h-14' 
+            : 'bg-red-600 text-white shadow-red-600/40 px-4 h-14 gap-2'
         }`}
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
+        {!isOpen && showPrompt && (
+          <span className="whitespace-nowrap text-sm font-semibold tracking-tight">Talk with Sphere AI</span>
+        )}
       </motion.button>
     </div>
   );

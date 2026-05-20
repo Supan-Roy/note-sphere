@@ -75,6 +75,15 @@ export interface Semester {
   courses: Course[];
 }
 
+export interface TaskItem {
+  id: string;
+  title: string;
+  dueDate: string;
+  dueTime: string;
+  notes: string;
+  createdAt: any;
+}
+
 // Feature 2: Sharing Room Types
 export interface Room {
   id: string;

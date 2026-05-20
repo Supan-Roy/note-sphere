@@ -3,40 +3,149 @@
 
 @theme {
   --font-sans: "Sofia Sans", ui-sans-serif, system-ui, sans-serif;
-  --color-primary: var(--color-indigo-600);
-  --color-secondary: var(--color-cyan-500);
+  --color-primary: #4f8cff;
+  --color-secondary: #8b5cf6;
 }
 
 @layer base {
   :root {
-    --bg-main: #030712;
-    --bg-card: rgba(255, 255, 255, 0.05);
-    --border-main: rgba(255, 255, 255, 0.1);
-    --text-main: #f3f4f6;
-    --text-dim: #9ca3af;
-    --sidebar-bg: rgba(3, 7, 18, 0.8);
+    --bg-main: #020617;
+    --bg-card: rgba(9, 14, 32, 0.72);
+    --border-main: rgba(148, 163, 184, 0.16);
+    --text-main: #f8fbff;
+    --text-dim: #a9b4c7;
+    --sidebar-bg: rgba(4, 10, 28, 0.82);
   }
 
   :root.light {
-    --bg-main: #f8fafc;
-    --bg-card: rgba(0, 0, 0, 0.03);
-    --border-main: rgba(0, 0, 0, 0.1);
+    --bg-main: #f4f7fb;
+    --bg-card: rgba(255, 255, 255, 0.82);
+    --border-main: rgba(15, 23, 42, 0.12);
     --text-main: #0f172a;
-    --text-dim: #64748b;
-    --sidebar-bg: rgba(255, 255, 255, 0.8);
+    --text-dim: #334155;
+    --sidebar-bg: rgba(255, 255, 255, 0.92);
+  }
+
+  html {
+    color-scheme: dark;
+    background:
+      radial-gradient(circle at top left, rgba(59, 130, 246, 0.24), transparent 28%),
+      radial-gradient(circle at top right, rgba(168, 85, 247, 0.18), transparent 24%),
+      linear-gradient(180deg, #020617 0%, #030712 48%, #01040d 100%);
+  }
+
+  html.light {
+    color-scheme: light;
+    background:
+      radial-gradient(circle at top left, rgba(59, 130, 246, 0.1), transparent 28%),
+      radial-gradient(circle at top right, rgba(168, 85, 247, 0.08), transparent 24%),
+      linear-gradient(180deg, #f8fafc 0%, #eef4fb 48%, #e8eef7 100%);
   }
 
   body {
-    @apply bg-[var(--bg-main)] text-[var(--text-main)] font-sans antialiased transition-colors duration-300;
+    @apply bg-[var(--bg-main)] text-[var(--text-main)] font-sans antialiased transition-colors duration-300 overflow-x-hidden;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(59, 130, 246, 0.18), transparent 24%),
+      radial-gradient(circle at 82% 8%, rgba(168, 85, 247, 0.14), transparent 20%),
+      radial-gradient(circle at 74% 84%, rgba(14, 165, 233, 0.12), transparent 22%),
+      linear-gradient(180deg, #020617 0%, #030712 50%, #01040d 100%);
+  }
+
+  #root {
+    min-height: 100vh;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-[var(--bg-card)] backdrop-blur-md border border-[var(--border-main)] rounded-2xl;
+    @apply bg-[var(--bg-card)] backdrop-blur-xl border border-[var(--border-main)] rounded-2xl;
+    box-shadow: 0 22px 60px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  :root.light .glass-card {
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.75);
   }
   
   .glass-sidebar {
-    @apply bg-[var(--sidebar-bg)] backdrop-blur-lg border-r border-[var(--border-main)];
+    @apply bg-[var(--sidebar-bg)] backdrop-blur-xl border-r border-[var(--border-main)];
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03);
+  }
+
+  :root.light .glass-sidebar {
+    box-shadow: inset -1px 0 0 rgba(15, 23, 42, 0.04);
+  }
+
+  :root.light .sidebar-nav-item {
+    color: var(--text-dim);
+  }
+
+  :root.light .sidebar-nav-item:hover,
+  :root.light .sidebar-nav-item:hover .sidebar-nav-icon,
+  :root.light .sidebar-nav-item:hover .sidebar-nav-label {
+    color: var(--text-main);
+  }
+
+  :root.light .sidebar-nav-item:not(.text-sky-300) .sidebar-nav-icon {
+    color: var(--text-main);
+  }
+
+  :root.light .sidebar-nav-item.text-sky-300 .sidebar-nav-icon,
+  :root.light .sidebar-nav-item.text-sky-300 .sidebar-nav-label {
+    color: #2563eb;
+  }
+
+  :root.light .sidebar-brand-icon {
+    box-shadow: 0 14px 30px rgba(59, 130, 246, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  :root.light .sidebar-brand-icon-symbol,
+  :root.light .sidebar-buy-card-icon-symbol {
+    color: white;
+  }
+
+  :root.light .sidebar-buy-card {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: rgba(15, 23, 42, 0.08);
+  }
+
+  :root.light .sidebar-buy-card p {
+    color: var(--text-main);
+  }
+
+  :root.light .sidebar-buy-card p:last-child {
+    color: var(--text-dim);
+  }
+
+  :root.light .dashboard-feature-icon-wrap {
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.08);
+  }
+
+  :root.light .dashboard-feature-icon {
+    color: var(--text-main);
+  }
+
+  :root.light .dashboard-feature-badge {
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: var(--text-main);
+  }
+
+  :root.light .dashboard-feature-icon-wrap:hover,
+  :root.light .dashboard-feature-badge:hover {
+    background: rgba(15, 23, 42, 0.1);
+    border-color: rgba(15, 23, 42, 0.12);
+  }
+
+  .app-surface {
+    background:
+      linear-gradient(180deg, rgba(15, 23, 42, 0.7), rgba(2, 6, 23, 0.1)),
+      radial-gradient(circle at top, rgba(59, 130, 246, 0.1), transparent 32%);
+  }
+
+  :root.light .app-surface {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.55)),
+      radial-gradient(circle at top, rgba(59, 130, 246, 0.08), transparent 32%);
   }
 }
