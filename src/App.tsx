@@ -25,17 +25,16 @@ import { Note, Room, Semester, TaskItem } from "./types";
 export default function App() {
   const currentUserId = "user1";
   const [activeTab, setActiveTab] = useState("dashboard");
-  const readSidebarPreference = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     try {
-      return localStorage.getItem("noteSphere.sidebarCollapsed") === "true";
+      return window.innerWidth <= window.innerHeight;
     } catch {
       return false;
     }
-  };
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(readSidebarPreference);
+  });
   const [isMobileScreen, setIsMobileScreen] = useState(() => {
     try {
-      return window.innerWidth < 1024;
+      return window.innerWidth <= window.innerHeight;
     } catch {
       return false;
     }
@@ -54,21 +53,16 @@ export default function App() {
   }, [isDarkMode]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 1023px)");
-
     const updateLayoutMode = () => {
-      const mobile = mediaQuery.matches;
+      const mobile = window.innerWidth <= window.innerHeight;
       setIsMobileScreen(mobile);
-      // For larger desktop widths (>=1280) always show the sidebar by default.
-      // For smaller non-mobile widths, fall back to stored preference.
-      const forceExpanded = window.innerWidth >= 1280;
-      setIsSidebarCollapsed(mobile ? true : (forceExpanded ? false : readSidebarPreference()));
+      setIsSidebarCollapsed(mobile);
     };
 
     updateLayoutMode();
-    mediaQuery.addEventListener("change", updateLayoutMode);
+    window.addEventListener("resize", updateLayoutMode);
 
-    return () => mediaQuery.removeEventListener("change", updateLayoutMode);
+    return () => window.removeEventListener("resize", updateLayoutMode);
   }, []);
 
   const [notes, setNotes] = useState<Note[]>(() => {
