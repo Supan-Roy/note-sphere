@@ -1,0 +1,6 @@
+{
+  "name": "Note Sphere",
+  "description": "An AI-native collaborative knowledge intelligence platform for modern learning. Features multimodal note parsing, handwritten-to-PDF OCR, AI study companion, and automated knowledge graph generation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

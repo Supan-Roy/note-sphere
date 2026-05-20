@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Sofia Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: var(--color-indigo-600);
+  --color-secondary: var(--color-cyan-500);
+}
+
+@layer base {
+  :root {
+    --bg-main: #030712;
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --border-main: rgba(255, 255, 255, 0.1);
+    --text-main: #f3f4f6;
+    --text-dim: #9ca3af;
+    --sidebar-bg: rgba(3, 7, 18, 0.8);
+  }
+
+  :root.light {
+    --bg-main: #f8fafc;
+    --bg-card: rgba(0, 0, 0, 0.03);
+    --border-main: rgba(0, 0, 0, 0.1);
+    --text-main: #0f172a;
+    --text-dim: #64748b;
+    --sidebar-bg: rgba(255, 255, 255, 0.8);
+  }
+
+  body {
+    @apply bg-[var(--bg-main)] text-[var(--text-main)] font-sans antialiased transition-colors duration-300;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-[var(--bg-card)] backdrop-blur-md border border-[var(--border-main)] rounded-2xl;
+  }
+  
+  .glass-sidebar {
+    @apply bg-[var(--sidebar-bg)] backdrop-blur-lg border-r border-[var(--border-main)];
+  }
+}
