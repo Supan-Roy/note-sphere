@@ -59,7 +59,10 @@ export default function App() {
     const updateLayoutMode = () => {
       const mobile = mediaQuery.matches;
       setIsMobileScreen(mobile);
-      setIsSidebarCollapsed(mobile ? true : readSidebarPreference());
+      // For larger desktop widths (>=1280) always show the sidebar by default.
+      // For smaller non-mobile widths, fall back to stored preference.
+      const forceExpanded = window.innerWidth >= 1280;
+      setIsSidebarCollapsed(mobile ? true : (forceExpanded ? false : readSidebarPreference()));
     };
 
     updateLayoutMode();

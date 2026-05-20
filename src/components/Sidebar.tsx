@@ -59,7 +59,7 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
         </button>
       </div>
 
-      <nav className="relative flex-1 space-y-1 overflow-y-auto pr-1">
+      <nav className="relative flex-1 space-y-1 overflow-y-auto pr-1 sidebar-scroll">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
