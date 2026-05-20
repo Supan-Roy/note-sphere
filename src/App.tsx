@@ -161,7 +161,7 @@ export default function App() {
 
     const noteId = params.get("note");
     if (!noteId) return;
-    const sharedNote = notes.find(note => note.id === noteId);
+    const sharedNote = notes.find((note: Note) => note.id === noteId);
     if (sharedNote) {
       setSelectedNote(sharedNote);
       setActiveTab("my-notes");
@@ -169,7 +169,12 @@ export default function App() {
   }, [notes]);
 
   const handleSaveCloudNote = (newNote: Note) => {
-    setNotes(prev => [newNote, ...prev.filter(note => note.id !== newNote.id)]);
+    setNotes((prev: Note[]) => [newNote, ...prev.filter((note: Note) => note.id !== newNote.id)]);
+  };
+
+  const handleDeleteNote = (id: string) => {
+    setNotes((prev: Note[]) => prev.filter((n: Note) => n.id !== id));
+    if (selectedNote?.id === id) setSelectedNote(null);
   };
 
   const renderContent = () => {
@@ -183,9 +188,9 @@ export default function App() {
 
     switch (activeTab) {
       case "dashboard":
-      return <Dashboard notes={notes} onNoteOpen={(note) => setSelectedNote(note)} onChatOpen={handleStartChat} onCreateNote={() => setActiveTab("create-note")} onViewNotes={() => setActiveTab("my-notes")} onNavigate={(tab) => setActiveTab(tab)} onDeleteNote={(id) => { setNotes(prev => prev.filter(n => n.id !== id)); if (selectedNote?.id === id) setSelectedNote(null); }} />;
+      return <Dashboard notes={notes} onNoteOpen={(note) => setSelectedNote(note)} onChatOpen={handleStartChat} onCreateNote={() => setActiveTab("create-note")} onViewNotes={() => setActiveTab("my-notes")} onNavigate={(tab) => setActiveTab(tab)} onDeleteNote={handleDeleteNote} />;
       case "my-notes":
-      return <Dashboard notes={notes} onNoteOpen={(note) => setSelectedNote(note)} onChatOpen={handleStartChat} onCreateNote={() => setActiveTab("create-note")} onViewNotes={() => setActiveTab("my-notes")} onNavigate={(tab) => setActiveTab(tab)} onDeleteNote={(id) => { setNotes(prev => prev.filter(n => n.id !== id)); if (selectedNote?.id === id) setSelectedNote(null); }} title="My Notes" />;
+      return <Dashboard notes={notes} onNoteOpen={(note) => setSelectedNote(note)} onChatOpen={handleStartChat} onCreateNote={() => setActiveTab("create-note")} onViewNotes={() => setActiveTab("my-notes")} onNavigate={(tab) => setActiveTab(tab)} onDeleteNote={handleDeleteNote} title="My Notes" />;
       case "upload":
         return <UploadCenter onSaveNote={(newNote) => setNotes(prev => [newNote, ...prev])} onGoToChat={handleStartChat} />;
       case "create-note":
@@ -193,7 +198,7 @@ export default function App() {
       case "toolkit":
         return <StudyToolkit notes={notes} />;
       case "ask":
-        return <AskNotes notes={notes} initialNoteId={initialChatNoteId} />;
+        return <AskNotes notes={notes} initialNoteId={initialChatNoteId} onAddNote={(note) => setNotes(prev => [note, ...prev])} />;
       case "graph":
         return <KnowledgeGraph notes={notes} />;
       case "semester":

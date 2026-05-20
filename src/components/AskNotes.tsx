@@ -1,12 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, ChangeEvent } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MessageSquare, Send, Sparkles, Loader2, Brain, FileText, Search } from "lucide-react";
 import { Note } from "../types";
 
-export function AskNotes({ notes, initialNoteId }: { notes: Note[], initialNoteId: string | null }) {
+export function AskNotes({ notes, initialNoteId, onAddNote }: { notes: Note[], initialNoteId: string | null, onAddNote?: (note: Note) => void }) {
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(
     initialNoteId || (notes.length > 0 ? notes[0].id : null)
   );
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Sync state if initialNoteId changes (e.g. user navigates multiple times)
   useEffect(() => {
@@ -22,6 +23,34 @@ export function AskNotes({ notes, initialNoteId }: { notes: Note[], initialNoteI
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const selectedNote = notes.find(n => n.id === selectedNoteId);
+
+  function makeId() { return Math.random().toString(36).slice(2,11); }
+
+  const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const f = files[0];
+    const id = makeId();
+    const newNote: Note = {
+      id,
+      title: f.name,
+      ownerId: 'user1',
+      ownerName: 'You',
+      type: f.type.includes('pdf') ? 'pdf' : (f.type.startsWith('image') ? 'image' : 'text'),
+      content: '',
+      rawText: '',
+      tags: [],
+      isPublic: false,
+      likesCount: 0,
+      bookmarksCount: 0,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    if (onAddNote) onAddNote(newNote);
+    setSelectedNoteId(id);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -104,12 +133,16 @@ export function AskNotes({ notes, initialNoteId }: { notes: Note[], initialNoteI
            )}
         </div>
         
-        <div className="p-4 border-t border-white/5">
-           <div className="glass-card p-4 bg-indigo-500/5">
-              <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">AI Agent Active</p>
-              <p className="text-[11px] text-gray-500 leading-tight">I use Gemini Flash to parse your documents in real-time.</p>
-           </div>
-        </div>
+          <div className="p-4 border-t border-white/5 space-y-3">
+            <input ref={fileInputRef} type="file" onChange={handleFileInput} className="hidden" />
+            <button onClick={() => fileInputRef.current?.click()} className="w-full py-2 rounded-xl bg-white/5 text-sm font-semibold hover:bg-white/10">Upload a note</button>
+            <div>
+             <div className="glass-card p-4 bg-indigo-500/5">
+               <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">AI Agent Active</p>
+               <p className="text-[11px] text-gray-500 leading-tight">I use Gemini Flash to parse your documents in real-time.</p>
+             </div>
+            </div>
+          </div>
       </aside>
 
       {/* Main Chat Area */}
@@ -164,6 +197,13 @@ export function AskNotes({ notes, initialNoteId }: { notes: Note[], initialNoteI
 
         <div className="p-6 border-t border-white/5 bg-gradient-to-t from-black/40 to-transparent">
           <div className="max-w-3xl mx-auto relative">
+            <div className="flex gap-2 mb-3">
+              <button onClick={() => { setInput(`Please summarize the following note: ${selectedNote ? selectedNote.title : ''}`); handleSend(); }} className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm">Summarize</button>
+              <button onClick={() => { setInput(`Generate a 5-question multiple choice quiz from note: ${selectedNote ? selectedNote.title : ''}`); handleSend(); }} className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm">Generate Quiz</button>
+              <button onClick={() => { setInput(`Extract key concepts and create flashcards for note: ${selectedNote ? selectedNote.title : ''}`); handleSend(); }} className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm">Flashcards</button>
+              <button onClick={() => { setInput(`Explain the main concepts in simple terms from note: ${selectedNote ? selectedNote.title : ''}`); handleSend(); }} className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm">Explain</button>
+            </div>
+
              <input 
                type="text"
                value={input}
