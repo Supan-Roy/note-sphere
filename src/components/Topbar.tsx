@@ -1,12 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, Search, Upload, Bell, ChevronDown, Sun, Moon, User } from "lucide-react";
 
 export function Topbar({ isDarkMode, toggleDarkMode, onUpload, onToggleSidebar, isSidebarCollapsed, isMobileScreen }: { isDarkMode: boolean, toggleDarkMode: () => void, onUpload: () => void, onToggleSidebar: () => void, isSidebarCollapsed: boolean, isMobileScreen: boolean }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showLoginNotice, setShowLoginNotice] = useState(false);
+  const profileButtonRef = useRef<HTMLButtonElement>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     // when profile popover opens, show the testing notice inside it
     if (isProfileOpen) setShowLoginNotice(true);
+  }, [isProfileOpen]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!isProfileOpen) return;
+      const target = event.target as Node;
+      if (profileButtonRef.current?.contains(target)) return;
+      if (profileMenuRef.current?.contains(target)) return;
+      setIsProfileOpen(false);
+      setShowLoginNotice(false);
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [isProfileOpen]);
   const currentDateLabel = new Intl.DateTimeFormat("en-US", {
     weekday: "long",
@@ -23,13 +39,15 @@ export function Topbar({ isDarkMode, toggleDarkMode, onUpload, onToggleSidebar, 
         }`}
       />
       <div className="flex w-full min-w-0 flex-1 flex-wrap items-center gap-3 lg:max-w-4xl">
-        <button
-          onClick={onToggleSidebar}
-          className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-[var(--text-dim)] transition-all hover:bg-white/10 hover:text-[var(--text-main)]"
-          aria-label={isSidebarCollapsed ? "Open sidebar" : "Collapse sidebar"}
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+        {!isMobileScreen && (
+          <button
+            onClick={onToggleSidebar}
+            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-[var(--text-dim)] transition-all hover:bg-white/10 hover:text-[var(--text-main)]"
+            aria-label={isSidebarCollapsed ? "Open sidebar" : "Collapse sidebar"}
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
 
         <div className="relative group z-10 flex min-w-0 flex-1 basis-full sm:basis-auto max-w-none lg:max-w-2xl">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-dim)] group-focus-within:text-indigo-300 transition-colors" />
@@ -69,6 +87,7 @@ export function Topbar({ isDarkMode, toggleDarkMode, onUpload, onToggleSidebar, 
         {/* notice moved inside profile popover */}
 
         <button
+          ref={profileButtonRef}
           onClick={() => setIsProfileOpen((value) => !value)}
           className="flex items-center gap-2 rounded-2xl pl-2 pr-1 h-10 hover:bg-white/5 transition-colors group border border-white/5 bg-white/[0.03]"
           aria-expanded={isProfileOpen}
@@ -87,30 +106,30 @@ export function Topbar({ isDarkMode, toggleDarkMode, onUpload, onToggleSidebar, 
         </button>
 
         {isProfileOpen && (
-          <div className="absolute right-0 top-full mt-3 w-[290px] rounded-3xl border border-white/10 bg-[var(--bg-card)] p-4 shadow-[0_24px_60px_rgba(15,23,42,0.28)] backdrop-blur-xl z-50">
+          <div ref={profileMenuRef} className="absolute right-0 top-full mt-3 w-[290px] rounded-3xl border border-white/10 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 p-4 shadow-[0_24px_60px_rgba(15,23,42,0.42)] z-50">
             <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-              <div className="w-12 h-12 rounded-2xl border border-white/20 flex items-center justify-center text-sm font-bold text-white shadow-lg shadow-indigo-500/20 overflow-hidden">
+              <div className="w-12 h-12 rounded-2xl border border-white/20 flex items-center justify-center text-sm font-bold text-white shadow-lg shadow-indigo-500/20 overflow-hidden bg-white/10">
                 <img src="https://www.supanroy.com/Supan%20-%20Profile%20Main.jpg" alt="Supan Roy" className="w-full h-full object-cover" />
               </div>
               <div>
-                <p className="text-sm font-bold text-[var(--text-main)]">Supan Roy</p>
-                <p className="text-xs text-[var(--text-dim)]">Daffodil International University</p>
+                <p className="text-sm font-bold text-white">Supan Roy</p>
+                <p className="text-xs text-blue-100/80">Daffodil International University</p>
               </div>
             </div>
 
             <div className="mt-4 space-y-2 text-sm">
               {!showLoginNotice ? (
-                <button onClick={() => setShowLoginNotice(true)} className="w-full flex items-center gap-3 rounded-2xl bg-white/5 px-3 py-2 text-[var(--text-main)] hover:bg-white/6 transition-colors">
+                <button onClick={() => setShowLoginNotice(true)} className="w-full flex items-center gap-3 rounded-2xl bg-white/10 px-3 py-2 text-white hover:bg-white/15 transition-colors">
                   <User className="w-4 h-4 text-indigo-300" />
                   <span>View Profile</span>
                 </button>
               ) : (
                 <div
-                  className="w-full rounded-lg p-3"
+                  className="w-full rounded-2xl p-3"
                   style={{
-                    background: isDarkMode ? 'rgba(255,255,255,0.96)' : 'rgba(255,249,230,1)',
-                    border: isDarkMode ? '1px solid rgba(15,23,42,0.06)' : '1px solid rgba(250,204,21,0.3)',
-                    color: '#0f172a'
+                    background: 'linear-gradient(135deg, rgba(255,255,255,1), rgba(255,247,237,1))',
+                    border: '1px solid rgba(251,191,36,0.35)',
+                    color: '#0f172a',
                   }}
                 >
                   <p className="text-sm">Signup/login is intentionally not implemented for testing. - Thanks Supan Roy</p>

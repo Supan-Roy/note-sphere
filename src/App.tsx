@@ -220,7 +220,7 @@ export default function App() {
       <div className="pointer-events-none absolute inset-0 app-surface" />
       <div className="pointer-events-none absolute -top-32 left-1/4 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-violet-500/10 blur-3xl" />
-      <div className="relative z-10 grid h-screen grid-cols-1 lg:grid-cols-[auto_minmax(0,1fr)] overflow-hidden">
+      <div className="relative z-10 grid h-screen grid-cols-[auto_minmax(0,1fr)] overflow-hidden">
         <Sidebar
           activeTab={activeTab}
           setActiveTab={(tab) => {
@@ -235,10 +235,7 @@ export default function App() {
           isMobileScreen={isMobileScreen}
         />
 
-        <div
-          className="relative z-10 flex min-w-0 flex-col h-screen overflow-hidden"
-          style={isMobileScreen ? { paddingLeft: isSidebarCollapsed ? "5rem" : "16rem" } : undefined}
-        >
+        <div className="relative z-10 flex min-w-0 flex-col h-screen overflow-hidden">
           <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
             <Topbar
               isDarkMode={isDarkMode}

@@ -59,7 +59,7 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
         </button>
       </div>
 
-      <nav className="relative flex-1 space-y-1">
+      <nav className="relative flex-1 space-y-1 overflow-y-auto pr-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -69,9 +69,6 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
               key={item.id}
               onClick={() => {
                 setActiveTab(item.id);
-                if (isMobileScreen) {
-                  onToggleCollapse();
-                }
               }}
               className={`sidebar-nav-item w-full flex items-center ${isCollapsed ? "justify-center px-2" : "gap-3 px-3"} py-2.5 rounded-2xl transition-all duration-200 group border ${
                 isActive 

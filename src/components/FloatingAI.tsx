@@ -11,12 +11,27 @@ export function FloatingAI() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const chatPanelRef = useRef<HTMLDivElement>(null);
+  const chatToggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!isOpen) return;
+      const target = event.target as Node;
+      if (chatPanelRef.current?.contains(target)) return;
+      if (chatToggleRef.current?.contains(target)) return;
+      setIsOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [isOpen]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -54,6 +69,7 @@ export function FloatingAI() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={chatPanelRef}
             initial={{ opacity: 0, scale: 0.9, y: 20, x: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20, x: 20 }}
@@ -134,6 +150,7 @@ export function FloatingAI() {
       </AnimatePresence>
 
       <motion.button 
+        ref={chatToggleRef}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => {
