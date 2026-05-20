@@ -5,6 +5,7 @@ import { MessageSquare, X, Send, Sparkles, Loader2, Minus } from "lucide-react";
 export function FloatingAI() {
   const [isOpen, setIsOpen] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
+  const [showIntroPulse, setShowIntroPulse] = useState(false);
   const [messages, setMessages] = useState<{role: string, content: string}[]>([
     { role: "assistant", content: "Hi! I'm Note Sphere AI. Ask me anything about your studies or notes." }
   ]);
@@ -13,6 +14,19 @@ export function FloatingAI() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatPanelRef = useRef<HTMLDivElement>(null);
   const chatToggleRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const introSeen = window.localStorage.getItem("noteSphere.chatIntroSeen") === "true";
+    if (introSeen) return;
+
+    setShowIntroPulse(true);
+    const timeoutId = window.setTimeout(() => {
+      setShowIntroPulse(false);
+      window.localStorage.setItem("noteSphere.chatIntroSeen", "true");
+    }, 2300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -149,26 +163,44 @@ export function FloatingAI() {
         )}
       </AnimatePresence>
 
-      <motion.button 
-        ref={chatToggleRef}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          setIsOpen(!isOpen);
-          setShowPrompt(false);
-        }}
-        id="chat-toggle"
-        className={`rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${
-          isOpen 
-            ? 'bg-white/5 text-[var(--text-dim)] border border-[var(--border-main)] rotate-90 w-14 h-14' 
-            : 'bg-red-600 text-white shadow-red-600/40 px-4 h-14 gap-2'
-        }`}
-      >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
-        {!isOpen && showPrompt && (
-          <span className="whitespace-nowrap text-sm font-semibold tracking-tight">Talk with Sphere AI</span>
+      <div className="relative">
+        {showIntroPulse && !isOpen && (
+          <div className="pointer-events-none absolute inset-0 -m-4">
+            {[0, 1, 2].map((ring) => (
+              <motion.span
+                key={ring}
+                className="absolute inset-0 rounded-full border border-red-400/60"
+                initial={{ scale: 1, opacity: 0.75 }}
+                animate={{ scale: 1.8, opacity: 0 }}
+                transition={{ duration: 1.2, delay: ring * 0.32, ease: "easeOut" }}
+              />
+            ))}
+          </div>
         )}
-      </motion.button>
+
+        <motion.button 
+          ref={chatToggleRef}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            setIsOpen(!isOpen);
+            setShowPrompt(false);
+            setShowIntroPulse(false);
+            window.localStorage.setItem("noteSphere.chatIntroSeen", "true");
+          }}
+          id="chat-toggle"
+          className={`relative rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${
+            isOpen 
+              ? 'bg-white/5 text-[var(--text-dim)] border border-[var(--border-main)] rotate-90 w-14 h-14' 
+              : 'bg-red-600 text-white shadow-red-600/40 px-4 h-14 gap-2'
+          }`}
+        >
+          {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
+          {!isOpen && showPrompt && (
+            <span className="whitespace-nowrap text-sm font-semibold tracking-tight">Talk with Sphere AI</span>
+          )}
+        </motion.button>
+      </div>
     </div>
   );
 }

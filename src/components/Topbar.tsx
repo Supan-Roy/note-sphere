@@ -28,6 +28,7 @@ export function Topbar({ isDarkMode, toggleDarkMode, onToggleSidebar, isSidebarC
     weekday: "long",
     month: "long",
     day: "numeric",
+    year: "numeric",
   }).format(new Date());
 
   return (
@@ -58,8 +59,8 @@ export function Topbar({ isDarkMode, toggleDarkMode, onToggleSidebar, isSidebarC
           />
         </div>
 
-        <div className={`hidden lg:flex min-w-[220px] items-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] ${isDarkMode ? "text-white" : "text-black"}`} style={{color: isDarkMode ? '#ffffff' : '#000000'}}>
-          <span className="font-semibold" aria-hidden>{currentDateLabel}</span>
+        <div className={`hidden lg:flex min-w-[220px] items-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`}>
+          <span className={`font-semibold topbar-date ${isDarkMode ? 'text-white' : 'text-black'}`} aria-hidden>{currentDateLabel}</span>
         </div>
       </div>
 
@@ -135,6 +136,13 @@ export function Topbar({ isDarkMode, toggleDarkMode, onToggleSidebar, isSidebarC
                   </div>
                 </div>
               )}
+
+              <button
+                type="button"
+                className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-[var(--text-main)] hover:bg-white/10 transition-colors"
+              >
+                <span>Logout</span>
+              </button>
 
               <p className="px-1 text-xs leading-5 text-[var(--text-dim)]">
                 Full name: <span className="text-[var(--text-main)] font-semibold">Supan Roy</span>

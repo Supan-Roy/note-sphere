@@ -1,4 +1,4 @@
-import { Github, Linkedin, Facebook, Mail, BookOpen, ArrowRight } from "lucide-react";
+import { Github, Linkedin, Facebook, Mail, ArrowRight, GraduationCap } from "lucide-react";
 
 const quickLinks = [
   { label: "Dashboard", href: "#dashboard" },
@@ -21,8 +21,8 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.5fr_0.8fr_1fr]">
           <div className="space-y-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 ring-1 ring-white/10 shadow-lg shadow-blue-500/20">
-                <BookOpen className="h-5 w-5 text-white" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 ring-1 ring-white/10 shadow-lg shadow-blue-600/30">
+                <GraduationCap className="h-6 w-6 text-white" />
               </div>
               <div>
                 <p className="text-2xl font-semibold tracking-tight text-[var(--text-main)]">Note Sphere</p>

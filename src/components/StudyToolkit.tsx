@@ -57,14 +57,14 @@ export function ToolkitCard({ title, description, icon: Icon, color, type, onGen
       </div>
       
       <div>
-        <h3 className="font-bold text-gray-100 group-hover:text-white transition-colors">{title}</h3>
-        <p className="text-xs text-gray-500 mt-1 leading-relaxed">{description}</p>
+        <h3 className="font-bold text-[var(--text-main)] group-hover:text-[var(--text-main)] transition-colors">{title}</h3>
+        <p className="text-xs text-[var(--text-dim)] mt-1 leading-relaxed">{description}</p>
       </div>
 
       <button 
         onClick={() => onGenerate(type)}
         disabled={isGenerating}
-        className={`mt-4 flex items-center justify-between w-full px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-300 transition-all border border-white/5 active:scale-95`}
+        className={`mt-4 flex items-center justify-between w-full px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-[var(--text-main)] transition-all border border-white/5 active:scale-95`}
       >
         <span>Generate Now</span>
         <ArrowRight className="w-3 h-3" />
@@ -215,7 +215,7 @@ export function StudyToolkit({ notes }: { notes: Note[] }) {
 
         {notes.length > 0 ? (
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-[var(--text-dim)] uppercase tracking-widest">Target Note:</span>
+            <span className="text-xs font-bold text-[var(--text-main)] uppercase tracking-widest">Target Note:</span>
             <select 
               value={selectedNoteId || ""} 
               onChange={(e) => setSelectedNoteId(e.target.value)}
@@ -225,9 +225,9 @@ export function StudyToolkit({ notes }: { notes: Note[] }) {
             </select>
           </div>
         ) : (
-          <div className="glass-card px-4 py-2 border-indigo-500/30 flex items-center gap-2">
+            <div className="glass-card px-4 py-2 border-indigo-500/30 flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-            <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">No Notes Uploaded</span>
+            <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">No Notes Uploaded</span>
           </div>
         )}
       </div>
@@ -313,12 +313,12 @@ export function StudyToolkit({ notes }: { notes: Note[] }) {
       />
 
       {notes.length === 0 && (
-        <div className="glass-card p-12 border-dashed flex flex-col items-center justify-center text-center space-y-4 opacity-50">
+          <div className="glass-card p-12 border-dashed flex flex-col items-center justify-center text-center space-y-4 opacity-70">
           <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
-            <Brain className="w-8 h-8 text-gray-600" />
+            <Brain className="w-8 h-8 text-[var(--text-dim)]" />
           </div>
           <div className="max-w-sm">
-            <p className="font-bold text-gray-400 italic">Upload a note in the Upload Center first to enable these AI tools.</p>
+            <p className="font-bold text-[var(--text-main)] italic">Upload a note in the Upload Center first to enable these AI tools.</p>
           </div>
         </div>
       )}

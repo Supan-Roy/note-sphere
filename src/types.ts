@@ -67,6 +67,18 @@ export interface Course {
   id: string;
   name: string;
   code?: string;
+  materials?: CourseMaterial[];
+}
+
+export type CourseMaterialType = "note" | "file";
+
+export interface CourseMaterial {
+  id: string;
+  name: string;
+  type: CourseMaterialType;
+  fileType?: string;
+  sizeLabel?: string;
+  uploadedAt: any;
 }
 
 export interface Semester {
@@ -109,4 +121,14 @@ export interface Quiz {
   id: string;
   title: string;
   questions: QuizQuestion[];
+}
+
+export type SearchResultType = "note" | "room" | "task" | "semester";
+
+export interface SearchResult {
+  id: string;
+  type: SearchResultType;
+  title: string;
+  subtitle?: string;
+  ref?: any;
 }
