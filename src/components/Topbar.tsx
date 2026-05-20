@@ -164,12 +164,18 @@ export function Topbar({ isDarkMode, toggleDarkMode, onToggleSidebar, isSidebarC
                 <div
                   className="w-full rounded-2xl p-3"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,1), rgba(255,247,237,1))',
-                    border: '1px solid rgba(251,191,36,0.35)',
-                    color: '#ffffff',
+                    background: isDarkMode
+                      ? 'linear-gradient(135deg, rgba(15,23,42,0.98), rgba(30,41,59,0.96))'
+                      : 'linear-gradient(135deg, rgba(255,255,255,1), rgba(255,247,237,1))',
+                    border: isDarkMode ? '1px solid rgba(148,163,184,0.22)' : '1px solid rgba(251,191,36,0.35)',
+                    color: isDarkMode ? '#ffffff' : '#0f172a',
                   }}
                 >
-                  <p className="text-sm text-white">Signup/login is intentionally not implemented for testing. - Thanks Supan Roy</p>
+                  <p className={`text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                    Signup/login is intentionally not implemented for testing.
+                    <span className="mt-2 block font-medium">Thanks,</span>
+                    <span className="block">Supan Roy</span>
+                  </p>
                   <div className="mt-2 text-right">
                     <button onClick={() => setShowLoginNotice(false)} className="text-xs text-indigo-500 hover:underline">Close</button>
                   </div>
