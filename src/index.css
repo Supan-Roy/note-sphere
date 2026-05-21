@@ -439,11 +439,14 @@ button:disabled {
   opacity: 0.6;
 }
 
-/* Interactive cards and containers */
-div[role="button"],
+/* Interactive divs and containers - only if they have role="button" */
+div[role="button"] {
+  cursor: pointer;
+}
+
+/* Button-like elements */
 [class*="button"],
-[class*="btn"],
-[class*="card"] {
+[class*="btn"] {
   cursor: pointer;
 }
 

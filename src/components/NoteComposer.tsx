@@ -112,7 +112,7 @@ function formatSavedTime(date: Date | null) {
 
 function StatCard({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-sm shadow-black/10">
+    <div className="pointer-events-none rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] px-4 py-3 shadow-sm">
       <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--text-dim)]">
         {icon}
         {label}
@@ -198,6 +198,21 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
 
   const updateMarks = () => {
     if (typeof document === "undefined") return;
+    
+    // Only update marks if editor is focused
+    if (document.activeElement !== editorRef.current) {
+      setActiveMarks({
+        bold: false,
+        italic: false,
+        underline: false,
+        strikethrough: false,
+        orderedList: false,
+        bulletList: false,
+        code: false,
+      });
+      return;
+    }
+    
     try {
       setActiveMarks({
         bold: document.queryCommandState("bold"),
@@ -495,7 +510,7 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
           <main className="relative rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg sm:p-6 lg:p-8">
             <div className="pointer-events-none absolute inset-0 rounded-lg hidden" />
             <div className="relative flex h-full flex-col gap-5">
-              <div className="space-y-4 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] p-5 sm:p-6">
+              <div className="space-y-4 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] p-5 sm:p-6 select-none">
                 <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                   <div className="min-w-0 flex-1 space-y-3">
                     <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.34em] text-[var(--accent-primary)]">
@@ -507,7 +522,7 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Editable Note Title"
-                      className="w-full bg-transparent text-4xl font-semibold tracking-tight text-[var(--text-main)] outline-none placeholder:text-[rgba(169,180,199,0.45)] sm:text-5xl"
+                      className="w-full select-auto bg-transparent text-4xl font-semibold tracking-tight text-[var(--text-main)] outline-none placeholder:text-[rgba(169,180,199,0.45)] sm:text-5xl"
                     />
                     <p className="max-w-3xl text-base leading-7 text-[var(--text-dim)]">
                       A premium AI-powered writing and study workspace for deep notes, revision, and research.
