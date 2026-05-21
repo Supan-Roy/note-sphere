@@ -41,18 +41,12 @@ export function Topbar({ isDarkMode, toggleDarkMode, onToggleSidebar, isSidebarC
   }).format(new Date());
 
   return (
-    <header className="min-h-16 glass-sidebar sticky top-0 px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 z-10 transition-colors relative overflow-visible">
-      <div
-        className={`pointer-events-none absolute inset-0 ${isDarkMode
-          ? "bg-gradient-to-r from-slate-950/70 via-slate-900/50 to-slate-950/70"
-          : "bg-gradient-to-r from-white/85 via-white/75 to-slate-50/90"
-        }`}
-      />
+    <header className="glass-sidebar sticky top-0 px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 z-10 transition-colors relative border-b border-[var(--border-main)]">
       <div className="flex w-full min-w-0 flex-1 flex-wrap items-center gap-3 lg:max-w-4xl">
         {!isMobileScreen && (
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-[var(--text-dim)] transition-all hover:bg-white/10 hover:text-[var(--text-main)]"
+            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-all hover:text-[var(--text-main)]"
             aria-label={isSidebarCollapsed ? "Open sidebar" : "Collapse sidebar"}
           >
             <Menu className="h-5 w-5" />
@@ -60,23 +54,23 @@ export function Topbar({ isDarkMode, toggleDarkMode, onToggleSidebar, isSidebarC
         )}
 
         <div className="relative group z-10 flex min-w-0 flex-1 basis-full sm:basis-auto max-w-none lg:max-w-2xl">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-dim)] group-focus-within:text-indigo-300 transition-colors" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-dim)]" />
           <input 
             type="text" 
             placeholder="Search notes, concepts, or ask a question..." 
-            className="w-full min-w-0 rounded-2xl border border-white/10 bg-white/[0.06] py-2.5 pl-10 pr-4 text-sm text-[var(--text-main)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] placeholder:text-[var(--text-dim)] focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400/40 transition-all"
+            className="w-full min-w-0 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] py-2.5 pl-10 pr-4 text-sm text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent-primary)] transition-colors"
           />
         </div>
 
-        <div className={`hidden lg:flex min-w-[220px] items-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`}>
-          <span className={`font-semibold topbar-date ${isDarkMode ? 'text-white' : 'text-black'}`} aria-hidden>{currentDateLabel}</span>
+        <div className="hidden lg:flex min-w-[220px] items-center rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] px-4 py-2.5 text-sm font-medium">
+          <span className="text-[var(--text-secondary)]">{currentDateLabel}</span>
         </div>
       </div>
 
-      <div className="relative z-10 flex items-center gap-2 sm:gap-4 ml-auto">
+      <div className="relative z-10 flex items-center gap-2 sm:gap-3 ml-auto">
         <button 
           onClick={toggleDarkMode}
-          className="p-2 text-[var(--text-dim)] hover:text-blue-300 hover:bg-white/5 rounded-xl transition-all"
+          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)] rounded-lg transition-all"
           title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
         >
           {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -89,108 +83,91 @@ export function Topbar({ isDarkMode, toggleDarkMode, onToggleSidebar, isSidebarC
             setIsProfileOpen(false);
             setShowLoginNotice(false);
           }}
-          className={`p-2 rounded-xl transition-colors relative ${isDarkMode ? "text-[var(--text-dim)] hover:text-[var(--text-main)] hover:bg-white/5" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100/80"}`}
+          className="p-2 rounded-lg transition-colors relative text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)]"
           aria-expanded={isNotificationsOpen}
           aria-label="Open notifications"
         >
           <Bell className="w-5 h-5" />
-          <span className={`absolute top-2 right-2 w-2 h-2 rounded-full border-2 ${isDarkMode ? "bg-indigo-500 border-[var(--bg-main)]" : "bg-indigo-400 border-white"}`}></span>
+          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--accent-primary)]"></span>
         </button>
 
         {isNotificationsOpen && (
           <div
             ref={notificationMenuRef}
-            className={`absolute right-[72px] top-full mt-3 w-[260px] rounded-3xl border p-4 z-50 backdrop-blur-2xl ${isDarkMode ? "border-white/10 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 shadow-[0_24px_60px_rgba(15,23,42,0.42)]" : "border-slate-200/80 bg-white/88 shadow-[0_20px_50px_rgba(15,23,42,0.12)]"}`}
+            className="absolute right-[72px] top-full mt-2 w-[280px] rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] z-50 shadow-lg"
           >
-            <div className={`flex items-center justify-between border-b pb-3 ${isDarkMode ? "border-white/10" : "border-slate-200/70"}`}>
-              <p className={`text-sm font-semibold ${isDarkMode ? "text-white" : "text-slate-800"}`}>Notifications</p>
-              <button onClick={() => setIsNotificationsOpen(false)} className={`text-xs ${isDarkMode ? "text-indigo-300" : "text-indigo-500"} hover:underline`}>
+            <div className="flex items-center justify-between border-b border-[var(--border-main)] p-4">
+              <p className="text-sm font-semibold text-[var(--text-main)]">Notifications</p>
+              <button onClick={() => setIsNotificationsOpen(false)} className="text-xs text-[var(--text-dim)] hover:text-[var(--text-secondary)]">
                 Close
               </button>
             </div>
-            <div className={`mt-4 rounded-2xl border px-4 py-6 text-center text-sm ${isDarkMode ? "border-white/10 bg-white/5 text-white" : "border-slate-200/80 bg-slate-50/90 text-slate-700"}`}>
-              No Notifications
+            <div className="mt-2 rounded-lg px-4 py-8 text-center text-sm text-[var(--text-dim)]">
+              No notifications yet
             </div>
           </div>
         )}
 
-        {/* Upload button moved to Dashboard header */}
-
-        <div className="h-4 w-px bg-[var(--border-main)] mx-2"></div>
-
-        {/* notice moved inside profile popover */}
+        <div className="h-4 w-px bg-[var(--border-main)] mx-1"></div>
 
         <button
           ref={profileButtonRef}
           onClick={() => setIsProfileOpen((value) => !value)}
-          className={`flex items-center gap-2 rounded-2xl pl-2 pr-1 h-10 transition-all group border ${isDarkMode ? "border-white/5 bg-white/[0.03] hover:bg-white/5" : "border-slate-300/70 bg-white/70 hover:bg-white/80 opacity-75 hover:opacity-100 shadow-none"}`}
+          className="flex items-center gap-2 rounded-lg pl-2 pr-1 h-10 transition-all border border-[var(--border-main)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-card)]"
           aria-expanded={isProfileOpen}
           aria-label="View profile"
         >
           <img
             src="https://www.supanroy.com/Supan%20-%20Profile%20Main.jpg"
             alt="Supan Roy"
-            className={`w-8 h-8 rounded-full object-cover border ${isDarkMode ? "border-white/20 shadow-lg shadow-indigo-500/20" : "border-slate-300/60 shadow-none opacity-85"}`}
+            className="w-8 h-8 rounded-lg object-cover"
           />
           <div className="hidden xl:flex flex-col items-start leading-tight pr-1">
-            <span className={`text-xs font-semibold ${isDarkMode ? "text-[var(--text-main)]" : "text-slate-700"}`}>View Profile</span>
-            <span className={`text-[10px] ${isDarkMode ? "text-[var(--text-dim)]" : "text-slate-500"}`}>Supan Roy</span>
+            <span className="text-xs font-semibold text-[var(--text-main)]">Profile</span>
+            <span className="text-[10px] text-[var(--text-dim)]">Supan Roy</span>
           </div>
-          <ChevronDown className={`w-4 h-4 ${isDarkMode ? "text-[var(--text-dim)] group-hover:text-[var(--text-main)]" : "text-slate-400 group-hover:text-slate-600"} transition-transform ${isProfileOpen ? "rotate-180" : "rotate-0"}`} />
+          <ChevronDown className={`w-4 h-4 text-[var(--text-secondary)] transition-transform ${isProfileOpen ? "rotate-180" : "rotate-0"}`} />
         </button>
 
         {isProfileOpen && (
           <div
             ref={profileMenuRef}
-            className={`absolute right-0 top-full mt-3 w-[290px] rounded-3xl border p-4 z-50 backdrop-blur-2xl ${isDarkMode ? "border-white/10 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 shadow-[0_24px_60px_rgba(15,23,42,0.42)]" : "border-slate-200/80 bg-white/85 shadow-[0_20px_50px_rgba(15,23,42,0.12)]"}`}
+            className="absolute right-0 top-full mt-2 w-[300px] rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] z-50 shadow-lg"
           >
-            <div className={`flex items-center gap-3 pb-4 ${isDarkMode ? "border-b border-white/10" : "border-b border-slate-200/70"}`}>
-              <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center text-sm font-bold overflow-hidden ${isDarkMode ? "border-white/20 text-white shadow-lg shadow-indigo-500/20 bg-white/10" : "border-slate-200/80 text-slate-700 bg-slate-50"}`}>
-                <img src="https://www.supanroy.com/Supan%20-%20Profile%20Main.jpg" alt="Supan Roy" className="w-full h-full object-cover" />
-              </div>
+            <div className="flex items-center gap-3 p-4 border-b border-[var(--border-main)]">
+              <img
+                src="https://www.supanroy.com/Supan%20-%20Profile%20Main.jpg"
+                alt="Supan Roy"
+                className="w-10 h-10 rounded-lg object-cover"
+              />
               <div>
-                <p className={`text-sm font-bold ${isDarkMode ? "text-white" : "text-slate-800"}`}>Supan Roy</p>
-                <p className={`text-xs ${isDarkMode ? "text-blue-100/80" : "text-slate-500"}`}>Daffodil International University</p>
+                <p className="text-sm font-semibold text-[var(--text-main)]">Supan Roy</p>
+                <p className="text-xs text-[var(--text-dim)]">Daffodil International University</p>
               </div>
             </div>
 
-            <div className="mt-4 space-y-2 text-sm">
+            <div className="p-2 space-y-1 text-sm">
               {!showLoginNotice ? (
-                <button onClick={() => setShowLoginNotice(true)} className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2 transition-colors ${isDarkMode ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100/80 text-slate-700 hover:bg-slate-200/80"}`}>
-                  <User className={`w-4 h-4 ${isDarkMode ? "text-indigo-300" : "text-slate-500"}`} />
+                <button onClick={() => setShowLoginNotice(true)} className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)]">
+                  <User className="w-4 h-4" />
                   <span>View Profile</span>
                 </button>
               ) : (
-                <div
-                  className="w-full rounded-2xl p-3"
-                  style={{
-                    background: isDarkMode
-                      ? 'linear-gradient(135deg, rgba(15,23,42,0.98), rgba(30,41,59,0.96))'
-                      : 'linear-gradient(135deg, rgba(255,255,255,1), rgba(255,247,237,1))',
-                    border: isDarkMode ? '1px solid rgba(148,163,184,0.22)' : '1px solid rgba(251,191,36,0.35)',
-                    color: isDarkMode ? '#ffffff' : '#0f172a',
-                  }}
-                >
-                  <p className={`text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                    Signup/login is intentionally not implemented for testing.
-                    <span className="mt-2 block font-medium">Thanks,</span>
-                    <span className="block">Supan Roy</span>
-                  </p>
-                  <div className="mt-2 text-right">
-                    <button onClick={() => setShowLoginNotice(false)} className="text-xs text-indigo-500 hover:underline">Close</button>
+                <div className="w-full rounded-lg p-3 bg-[var(--bg-elevated)] border border-[var(--border-main)] text-sm text-[var(--text-secondary)]">
+                  <p>Signup/login is intentionally not implemented for testing.</p>
+                  <p className="mt-2 font-medium">Thanks, Supan Roy</p>
+                  <div className="mt-2">
+                    <button onClick={() => setShowLoginNotice(false)} className="text-xs text-[var(--accent-primary)] hover:underline">Close</button>
                   </div>
                 </div>
               )}
 
-              <button
-                type="button"
-                className={`w-full flex items-center justify-center gap-2 rounded-2xl border px-3 py-2 text-sm font-semibold transition-colors ${isDarkMode ? "border-white/10 bg-white/5 text-[var(--text-main)] hover:bg-white/10" : "border-slate-200/80 bg-slate-50/90 text-slate-600 hover:bg-slate-100"}`}
-              >
+              <button type="button" className="w-full flex items-center justify-center gap-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] px-3 py-2.5 text-sm font-medium transition-colors text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)]">
                 <span>Logout</span>
               </button>
 
-              <p className={`px-1 text-xs leading-5 ${isDarkMode ? "text-[var(--text-dim)]" : "text-slate-500"}`}>
-                Full name: <span className={isDarkMode ? "text-[var(--text-main)] font-semibold" : "text-slate-700 font-semibold"}>Supan Roy</span>
+              <p className="px-1 text-xs text-[var(--text-dim)] mt-3">
+                Full name: <span className="text-[var(--text-secondary)] font-medium">Supan Roy</span>
                 <br />
                 Institution: <span className={isDarkMode ? "text-[var(--text-main)] font-semibold" : "text-slate-700 font-semibold"}>Daffodil International University</span>
               </p>

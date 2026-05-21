@@ -192,12 +192,12 @@ export function FloatingAI() {
           className={`relative rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${
             isOpen 
               ? 'bg-white/5 text-[var(--text-dim)] border border-[var(--border-main)] rotate-90 w-14 h-14' 
-              : 'bg-red-600 text-white shadow-red-600/40 px-4 h-14 gap-2'
+              : '!bg-red-600 !text-white shadow-red-600/40 px-4 h-14 gap-2'
           }`}
         >
-          {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
+          {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="!w-6 !h-6 !text-white" />}
           {!isOpen && showPrompt && (
-            <span className="whitespace-nowrap text-sm font-semibold tracking-tight">Talk with Sphere AI</span>
+            <span className="whitespace-nowrap text-sm font-semibold tracking-tight !text-white">Talk with Sphere AI</span>
           )}
         </motion.button>
       </div>

@@ -8,55 +8,62 @@
 }
 
 @layer base {
+  /* CLEAN PREMIUM DARK MODE PALETTE */
   :root {
-    --bg-main: #020617;
-    --bg-card: rgba(9, 14, 32, 0.72);
-    --border-main: rgba(148, 163, 184, 0.16);
-    --text-main: #f8fbff;
-    --text-dim: #a9b4c7;
-    --sidebar-bg: rgba(4, 10, 28, 0.82);
+    /* Backgrounds - Neutral dark slate/graphite */
+    --bg-main: #0F1419;
+    --bg-elevated: #1A1F2E;
+    --bg-card: #13171F;
+    
+    /* Text colors */
+    --text-main: #F5F7FA;
+    --text-secondary: #C9CED7;
+    --text-dim: #8B92A0;
+    
+    /* Borders - Subtle 1px */
+    --border-main: #2A2F3C;
+    --border-subtle: #1F2333;
+    
+    /* Accent - Restrained indigo/blue */
+    --accent-primary: #4F8CFF;
+    --accent-secondary: #6B7FFF;
+    --accent-muted: rgba(79, 140, 255, 0.12);
+    
+    /* Secondary accent - Muted emerald */
+    --accent-success: #2DD4BF;
+    
+    /* Sidebar */
+    --sidebar-bg: #0F1419;
   }
 
   :root.light {
-    --bg-main: #eef2f8;
-    --bg-card: rgba(255, 255, 255, 0.88);
-    --border-main: rgba(15, 23, 42, 0.16);
-    --text-main: #0f172a;
-    --text-dim: #1e293b;
-    --sidebar-bg: rgba(255, 255, 255, 0.92);
+    --bg-main: #F8FAFC;
+    --bg-elevated: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --text-main: #0F172A;
+    --text-secondary: #1E293B;
+    --text-dim: #475569;
+    --border-main: #CBD5E1;
+    --border-subtle: #E2E8F0;
+    --accent-primary: #2563EB;
+    --accent-secondary: #1D4ED8;
+    --accent-muted: rgba(37, 99, 235, 0.1);
+    --accent-success: #059669;
+    --sidebar-bg: #FFFFFF;
   }
 
   html {
     color-scheme: dark;
-    background:
-      radial-gradient(circle at top left, rgba(59, 130, 246, 0.24), transparent 28%),
-      radial-gradient(circle at top right, rgba(168, 85, 247, 0.18), transparent 24%),
-      linear-gradient(180deg, #020617 0%, #030712 48%, #01040d 100%);
+    background: var(--bg-main);
   }
 
   html.light {
     color-scheme: light;
-    background:
-      radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 26%),
-      radial-gradient(circle at top right, rgba(168, 85, 247, 0.06), transparent 22%),
-      linear-gradient(180deg, #f6f8fc 0%, #e9eef7 48%, #dde5f0 100%);
+    background: var(--bg-main);
   }
 
   body {
     @apply bg-[var(--bg-main)] text-[var(--text-main)] font-sans antialiased transition-colors duration-300 overflow-x-hidden;
-    background:
-      radial-gradient(circle at 14% 18%, rgba(59, 130, 246, 0.18), transparent 24%),
-      radial-gradient(circle at 82% 8%, rgba(168, 85, 247, 0.14), transparent 20%),
-      radial-gradient(circle at 74% 84%, rgba(14, 165, 233, 0.12), transparent 22%),
-      linear-gradient(180deg, #020617 0%, #030712 50%, #01040d 100%);
-  }
-
-  :root.light body {
-    background:
-      radial-gradient(circle at 14% 18%, rgba(59, 130, 246, 0.07), transparent 20%),
-      radial-gradient(circle at 82% 8%, rgba(168, 85, 247, 0.05), transparent 16%),
-      radial-gradient(circle at 74% 84%, rgba(14, 165, 233, 0.05), transparent 18%),
-      linear-gradient(180deg, #f4f7fb 0%, #e8eef7 52%, #dfe7f1 100%);
   }
 
   #root {
@@ -65,44 +72,74 @@
 }
 
 @layer components {
+  /* CLEAN CARD DESIGN */
   .glass-card {
-    @apply bg-[var(--bg-card)] backdrop-blur-xl border border-[var(--border-main)] rounded-2xl;
-    box-shadow: 0 22px 60px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    @apply bg-[var(--bg-card)] border border-[var(--border-main)] rounded-lg;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
   :root.light .glass-card {
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.84);
+    background: var(--bg-card);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
   
+  /* CLEAN SIDEBAR */
   .glass-sidebar {
-    @apply bg-[var(--sidebar-bg)] backdrop-blur-xl border-r border-[var(--border-main)];
-    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03);
+    @apply bg-[var(--sidebar-bg)] border-r border-[var(--border-main)];
+    box-shadow: none;
   }
 
   :root.light .glass-sidebar {
-    background: rgba(255, 255, 255, 0.94);
-    box-shadow: inset -1px 0 0 rgba(15, 23, 42, 0.06);
+    background: var(--sidebar-bg);
+    box-shadow: none;
   }
 
-  :root.light [class*="bg-white/5"] {
-    background-color: rgba(15, 23, 42, 0.06) !important;
+  /* BUTTON SYSTEM */
+  .btn-primary {
+    @apply bg-[var(--accent-primary)] text-white font-medium px-4 py-2.5 rounded-lg transition-all hover:bg-[var(--accent-secondary)] active:scale-95;
   }
 
-  :root.light [class*="bg-white/10"] {
-    background-color: rgba(15, 23, 42, 0.11) !important;
+  .btn-secondary {
+    @apply bg-[var(--bg-elevated)] border border-[var(--border-main)] text-[var(--text-main)] font-medium px-4 py-2.5 rounded-lg transition-all hover:bg-[var(--bg-card)] active:scale-95;
   }
 
-  :root.light [class*="bg-white/[0.04]"] {
-    background-color: rgba(15, 23, 42, 0.05) !important;
+  .btn-ghost {
+    @apply text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)] px-4 py-2.5 rounded-lg transition-all active:scale-95;
   }
 
-  :root.light [class*="border-white/5"] {
-    border-color: rgba(15, 23, 42, 0.12) !important;
+  .btn-small {
+    @apply px-3 py-1.5 text-sm;
   }
 
-  :root.light [class*="border-white/10"] {
-    border-color: rgba(15, 23, 42, 0.16) !important;
+  /* CLEAN TYPOGRAPHY */
+  .text-heading-lg {
+    @apply text-2xl font-bold tracking-tight text-[var(--text-main)];
+  }
+
+  .text-heading-md {
+    @apply text-xl font-bold tracking-tight text-[var(--text-main)];
+  }
+
+  .text-heading-sm {
+    @apply text-lg font-semibold tracking-tight text-[var(--text-main)];
+  }
+
+  .text-body {
+    @apply text-sm font-normal text-[var(--text-secondary)];
+  }
+
+  .text-caption {
+    @apply text-xs font-medium uppercase tracking-wide text-[var(--text-dim)];
+  }
+
+  /* CLEAN SIDEBAR NAV ITEMS */
+  .sidebar-nav-item {
+    @apply w-full flex items-center px-3 py-2.5 rounded-md transition-all border border-transparent;
+    @apply text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)];
+  }
+
+  .sidebar-nav-item.active {
+    @apply bg-[var(--bg-elevated)] border-[var(--border-main)] text-[var(--accent-primary)];
   }
 
   :root.light .text-white,
@@ -142,108 +179,98 @@
     stroke: currentColor !important;
   }
 
-  :root.light .sidebar-nav-item {
-    color: var(--text-dim);
+  /* Scrollbar styling */
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-main) transparent;
   }
 
-  :root.light .sidebar-nav-item:hover,
-  :root.light .sidebar-nav-item:hover .sidebar-nav-icon,
-  :root.light .sidebar-nav-item:hover .sidebar-nav-label {
-    color: var(--text-main);
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
   }
 
-  :root.light .sidebar-nav-item:not(.text-sky-300) .sidebar-nav-icon {
-    color: var(--text-main);
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
   }
 
-  :root.light .sidebar-nav-item.text-sky-300 .sidebar-nav-icon,
-  :root.light .sidebar-nav-item.text-sky-300 .sidebar-nav-label {
-    color: #2563eb;
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-main);
+    border-radius: 3px;
   }
 
-  :root.light .sidebar-brand-icon {
-    box-shadow: 0 14px 30px rgba(59, 130, 246, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  }
-
-  :root.light .sidebar-brand-icon-symbol,
-  :root.light .sidebar-buy-card-icon-symbol {
-    color: white;
-  }
-
-  :root.light .sidebar-buy-card {
-    background: rgba(255, 255, 255, 0.88);
-    border-color: rgba(15, 23, 42, 0.08);
-  }
-
-  :root.light .sidebar-buy-card p {
-    color: var(--text-main);
-  }
-
-  :root.light .sidebar-buy-card p:last-child {
-    color: var(--text-dim);
-  }
-
-  :root.light .dashboard-feature-icon-wrap {
-    background: rgba(15, 23, 42, 0.06);
-    border-color: rgba(15, 23, 42, 0.08);
-  }
-
-  :root.light .dashboard-feature-icon {
-    color: var(--text-main);
-  }
-
-  :root.light .dashboard-feature-badge {
-    background: rgba(15, 23, 42, 0.06);
-    border-color: rgba(15, 23, 42, 0.08);
-    color: var(--text-main);
-  }
-
-  :root.light .dashboard-feature-icon-wrap:hover,
-  :root.light .dashboard-feature-badge:hover {
-    background: rgba(15, 23, 42, 0.1);
-    border-color: rgba(15, 23, 42, 0.12);
-  }
-
-  .app-surface {
-    background:
-      linear-gradient(180deg, rgba(15, 23, 42, 0.7), rgba(2, 6, 23, 0.1)),
-      radial-gradient(circle at top, rgba(59, 130, 246, 0.1), transparent 32%);
-  }
-
-  :root.light .app-surface {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.55)),
-      radial-gradient(circle at top, rgba(59, 130, 246, 0.08), transparent 32%);
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--border-subtle);
   }
 }
 
-/* Make Topbar date extremely legible in both themes */
-.topbar-date {
-  color: #ffffff; /* hard white for dark theme */
-  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+/* Remove old gradient effects */
+.app-surface {
+  background: var(--bg-main);
 }
 
-:root.light .topbar-date {
-  color: #000000; /* hard black for light theme */
-  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+:root.light .app-surface {
+  background: var(--bg-main);
 }
 
-.topbar-date {
-  letter-spacing: 0.01em;
+/* Light mode card and container visibility enhancements */
+:root.light {
+  /* Add subtle shadows to all bordered elements for depth */
+  [class*="border"][class*="bg-"] {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  /* Cards with borders - more prominent in light mode */
+  .glass-card,
+  [class*="rounded-lg"][class*="border"],
+  section[class*="rounded"],
+  [class*="card"] {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.05);
+    border-color: #D1D5DB;
+  }
+
+  /* Elevated surfaces get stronger shadow */
+  [class*="bg-\[var(--bg-card)\)"],
+  [class*="bg-\[var(--bg-elevated)\)"] {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1), 0 1px 2px rgba(15, 23, 42, 0.06);
+  }
+
+  /* Dashboard and page cards */
+  .dashboard-card,
+  .note-card,
+  section {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  }
+
+  /* Buttons in light mode */
+  button[class*="border"],
+  button[class*="rounded"] {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  }
+
+  button[class*="rounded"]:hover:not(:disabled) {
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
+  }
+
+  /* Input fields and textareas */
+  input,
+  textarea,
+  [role="textbox"] {
+    border-color: #D1D5DB;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
+  }
+
+  input:focus,
+  textarea:focus,
+  [role="textbox"]:focus {
+    border-color: #2563EB;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05), 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
 }
 
-/* Minimal custom scrollbar for the left sidebar */
-.sidebar-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.10) transparent;
-}
-
-.sidebar-scroll::-webkit-scrollbar {
-  width: 6px;
-}
 .sidebar-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .sidebar-scroll::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.06);
   border-radius: 9999px;
@@ -257,4 +284,184 @@
 }
 :root.light .sidebar-scroll:hover::-webkit-scrollbar-thumb {
   background: rgba(15,23,42,0.10);
+}
+
+/* Note Editor Styles */
+.note-editor {
+  word-break: break-word;
+}
+
+.note-editor h1,
+.note-editor h2,
+.note-editor h3,
+.note-editor h4,
+.note-editor h5,
+.note-editor h6 {
+  @apply font-bold text-[var(--text-main)] my-3 first:mt-0;
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+.note-editor h1 {
+  font-size: 2rem;
+}
+
+.note-editor h2 {
+  font-size: 1.75rem;
+}
+
+.note-editor h3 {
+  font-size: 1.5rem;
+}
+
+.note-editor h4 {
+  font-size: 1.25rem;
+}
+
+  :root.light .note-editor blockquote {
+    @apply border-l-4 border-blue-500 bg-blue-50 py-2 px-4 my-3 rounded-r-lg text-slate-700 italic;
+  }
+
+  :root.light .note-editor pre {
+    @apply bg-slate-100 border border-slate-300 rounded-lg p-4 my-3 overflow-x-auto;
+  }
+
+  :root.light .note-editor pre code {
+    @apply text-sm font-mono text-slate-900;
+    font-family: 'Courier New', monospace;
+  }
+
+  :root.light .note-editor code:not(pre code) {
+    @apply bg-slate-200 border border-slate-300 rounded px-2 py-1 text-sm font-mono text-amber-900;
+  }
+
+  :root.light .note-editor .todo-line {
+    @apply flex items-center gap-2 my-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer;
+  }
+
+  :root.light .note-editor ol,
+  :root.light .note-editor ul {
+    @apply my-3 ml-6;
+  }
+
+  :root.light .note-editor li {
+    @apply my-1.5 text-slate-800;
+  }
+
+.note-editor ol,
+.note-editor ul {
+  @apply my-3 ml-6;
+}
+
+.note-editor ol {
+  list-style-type: decimal;
+}
+
+.note-editor ul {
+  list-style-type: disc;
+}
+
+.note-editor li {
+  @apply my-1.5;
+}
+
+.note-editor .todo-line {
+  @apply flex items-center gap-2 my-2 px-2 py-1.5 rounded hover:bg-white/5 cursor-pointer;
+}
+
+.note-editor .todo-line::before {
+  content: '';
+  display: inline-block;
+  width: 0;
+}
+
+.note-editor b,
+.note-editor strong {
+  @apply font-bold;
+}
+
+.note-editor i,
+.note-editor em {
+  @apply italic;
+}
+
+.note-editor u {
+  @apply underline;
+}
+
+.note-editor s,
+.note-editor strike {
+  @apply line-through;
+}
+
+/* Light mode editor styles */
+:root.light .note-editor blockquote {
+  @apply border-l-4 border-indigo-500 bg-indigo-500/10 py-2 px-4 my-3 rounded-r-lg text-slate-600 italic;
+}
+
+:root.light .note-editor pre {
+  @apply bg-slate-100 border border-slate-200 rounded-lg p-4 my-3 overflow-x-auto;
+}
+
+:root.light .note-editor pre code {
+  @apply text-sm font-mono text-slate-900;
+}
+
+:root.light .note-editor code:not(pre code) {
+  @apply bg-slate-100 border border-slate-200 rounded px-2 py-1 text-sm font-mono text-amber-700;
+}
+
+:root.light .note-editor .todo-line {
+  @apply flex items-center gap-2 my-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer;
+}
+
+/* Cursor styles for interactive elements */
+button,
+a,
+[role="button"],
+.sidebar-nav-item,
+.note-card,
+.dashboard-feature-card,
+[class*="clickable"],
+[onclick],
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Ensure all interactive buttons show pointer cursor */
+button:not(:disabled) {
+  cursor: pointer;
+  transition: cursor 0.2s ease;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Interactive cards and containers */
+div[role="button"],
+[class*="button"],
+[class*="btn"],
+[class*="card"] {
+  cursor: pointer;
+}
+
+/* Sidebar and navigation items */
+.sidebar-nav-item {
+  cursor: pointer;
+  transition: cursor 0.2s ease;
+}
+
+/* Form inputs should keep appropriate cursor */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea {
+  cursor: text;
+}
+
+select {
+  cursor: pointer;
 }

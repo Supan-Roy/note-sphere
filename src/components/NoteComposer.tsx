@@ -35,6 +35,8 @@ import {
   Bold,
   Slash,
   Minus,
+  Underline,
+  Share2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Note } from "../types";
@@ -46,7 +48,7 @@ interface NoteComposerProps {
 }
 
 type CommandId = "heading" | "quote" | "code" | "todo";
-type ToolbarMark = "bold" | "italic" | "underline" | "orderedList" | "bulletList" | "code";
+type ToolbarMark = "bold" | "italic" | "underline" | "strikethrough" | "orderedList" | "bulletList" | "code";
 type AiAction =
   | "summarize"
   | "improve"
@@ -130,10 +132,11 @@ const slashCommands: SlashCommand[] = [
 const toolbarItems: ToolbarItem[] = [
   { id: "bold", label: "Bold", icon: <Bold className="w-4 h-4" /> },
   { id: "italic", label: "Italic", icon: <Italic className="w-4 h-4" /> },
-  { id: "underline", label: "Underline", icon: <Type className="w-4 h-4" /> },
+  { id: "underline", label: "Underline", icon: <Underline className="w-4 h-4" /> },
+  { id: "strikethrough", label: "Strikethrough", icon: <Minus className="w-4 h-4" /> },
+  { id: "code", label: "Code", icon: <Code2 className="w-4 h-4" /> },
   { id: "orderedList", label: "Numbered", icon: <ListOrdered className="w-4 h-4" /> },
   { id: "bulletList", label: "Bullets", icon: <List className="w-4 h-4" /> },
-  { id: "code", label: "Code", icon: <Code2 className="w-4 h-4" /> },
 ];
 
 const aiActions: Array<{ id: AiAction; title: string; description: string; icon: React.ReactNode; tone: string }> = [
@@ -157,6 +160,7 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
     bold: false,
     italic: false,
     underline: false,
+    strikethrough: false,
     orderedList: false,
     bulletList: false,
     code: false,
@@ -199,6 +203,7 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
         bold: document.queryCommandState("bold"),
         italic: document.queryCommandState("italic"),
         underline: document.queryCommandState("underline"),
+        strikethrough: document.queryCommandState("strikethrough"),
         orderedList: document.queryCommandState("insertOrderedList"),
         bulletList: document.queryCommandState("insertUnorderedList"),
         code: document.queryCommandState("formatBlock") && /pre|code/i.test(document.queryCommandValue("formatBlock") || ""),
@@ -214,9 +219,36 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
 
   const exec = (command: string, value?: string) => {
     focusEditor();
-    document.execCommand(command, false, value);
-    syncContent();
-    updateMarks();
+    try {
+      if (command === "strikethrough") {
+        // Strikethrough support with styling
+        document.execCommand("styleWithCSS", false, "true");
+        document.execCommand("strikethrough", false, "true");
+      } else if (command === "formatBlock") {
+        // Ensure formatBlock works properly with h2, blockquote, pre tags
+        const val = value?.startsWith("<") ? value : `<${value}>`;
+        document.execCommand("formatBlock", false, val);
+        // Force update for Firefox compatibility
+        document.execCommand("formatBlock", false, val);
+      } else if (command === "insertOrderedList") {
+        document.execCommand("insertOrderedList", false, undefined);
+      } else if (command === "insertUnorderedList") {
+        document.execCommand("insertUnorderedList", false, undefined);
+      } else if (command === "insertHTML") {
+        document.execCommand("insertHTML", false, value);
+      } else {
+        // For basic formatting: bold, italic, underline
+        document.execCommand(command, false, undefined);
+      }
+    } catch (e) {
+      console.warn(`Command ${command} failed:`, e);
+    }
+    // Add a small delay to ensure command is applied before syncing
+    setTimeout(() => {
+      syncContent();
+      updateMarks();
+      focusEditor();
+    }, 5);
   };
 
   const syncContent = () => {
@@ -417,19 +449,19 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
   }, []);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(79,112,255,0.16),transparent_30%),radial-gradient(circle_at_top_right,rgba(139,92,246,0.14),transparent_28%),linear-gradient(180deg,#020617_0%,#030712_55%,#01040d_100%)] text-[var(--text-main)]">
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)]">
       <div className="mx-auto flex min-h-screen max-w-[1700px] flex-col px-4 py-4 sm:px-6 lg:px-8 xl:px-10">
-        <header className="mb-4 flex flex-col gap-4 rounded-[28px] border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-2xl shadow-[0_28px_90px_rgba(2,6,23,0.35)] lg:flex-row lg:items-center lg:justify-between">
+        <header className="mb-4 flex flex-col gap-4 rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] px-5 py-4 shadow-lg lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={onBack} className="inline-flex h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm font-semibold text-[var(--text-main)] transition-all hover:-translate-y-0.5 hover:bg-white/10 hover:shadow-lg hover:shadow-black/20">
+            <button onClick={onBack} className="inline-flex h-11 items-center gap-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] px-4 text-sm font-semibold text-[var(--text-secondary)] transition-all hover:-translate-y-0.5 hover:bg-[var(--bg-card)] hover:shadow-lg">
               <ArrowLeft className="w-4 h-4" />
               Back
             </button>
             <div className="hidden h-10 w-px bg-white/10 sm:block" />
             <div className="space-y-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.38em] text-indigo-300">Premium writing workspace</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.38em] text-[var(--accent-primary)]">Premium writing workspace</p>
               <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--text-dim)]">
-                <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 ${savingState === "synced" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300" : "border-white/10 bg-white/5"}`}>
+                  <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 ${savingState === "synced" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border-[var(--border-main)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]"}`}>
                   {savingState === "saving" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CircleCheckBig className="w-3.5 h-3.5" />}
                   {savingState === "saving" ? "Syncing" : savingState === "synced" ? "Draft" : "Draft"}
                 </span>
@@ -448,28 +480,28 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
                 <span className="inline-flex items-center gap-2"><Check className="w-4 h-4" /> ✓ Synced to Cloud</span>
               )}
             </div>
-            <button onClick={onViewNotes} className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-[var(--text-main)] transition-all hover:-translate-y-0.5 hover:bg-white/10">
+            <button onClick={onViewNotes} className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] px-4 py-2.5 text-sm font-semibold text-[var(--text-secondary)] transition-all hover:-translate-y-0.5 hover:bg-[var(--bg-card)]">
               <FileText className="w-4 h-4" />
               View Notes
             </button>
-            <button onClick={saveToCloud} className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20">
+            <button onClick={saveToCloud} className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent-primary)] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:brightness-110 hover:shadow-lg">
               <Cloud className="w-4 h-4" />
               Save to Cloud
             </button>
           </div>
         </header>
 
-        <div className="grid flex-1 grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.7fr)_420px]">
-          <main className="relative rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(7,12,28,0.88),rgba(6,10,24,0.84))] p-5 shadow-[0_30px_120px_rgba(2,6,23,0.45)] backdrop-blur-2xl sm:p-6 lg:p-8">
-            <div className="pointer-events-none absolute inset-0 rounded-[32px] bg-[radial-gradient(circle_at_top_left,rgba(79,112,255,0.12),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(139,92,246,0.08),transparent_24%)]" />
+        <div className="grid flex-1 grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.7fr)_400px]">
+          <main className="relative rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg sm:p-6 lg:p-8">
+            <div className="pointer-events-none absolute inset-0 rounded-lg hidden" />
             <div className="relative flex h-full flex-col gap-5">
-              <div className="space-y-4 rounded-[28px] border border-white/10 bg-white/[0.04] p-5 sm:p-6">
+              <div className="space-y-4 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] p-5 sm:p-6">
                 <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                   <div className="min-w-0 flex-1 space-y-3">
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.34em] text-indigo-300">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.34em] text-[var(--accent-primary)]">
                       <PenSquare className="w-3.5 h-3.5" />
                       Create Note
-                      <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] tracking-[0.28em] text-[var(--text-dim)]">Draft • {wordCount} words • {readingMinutes} min read</span>
+                      <span className="rounded-full border border-[var(--border-main)] bg-[var(--bg-main)] px-2.5 py-1 text-[10px] tracking-[0.28em] text-[var(--text-dim)]">Draft • {wordCount} words • {readingMinutes} min read</span>
                     </div>
                     <input
                       value={title}
@@ -491,39 +523,113 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
                 </div>
               </div>
 
-              <div ref={toolbarRef} className="sticky top-4 z-20 -mx-1 rounded-[24px] border border-white/10 bg-slate-950/70 p-2 shadow-[0_16px_40px_rgba(2,6,23,0.35)] backdrop-blur-xl">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-1">
-                    {toolbarItems.map((item) => {
-                      const active = activeMarks[item.id];
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => exec(item.id === "code" ? "formatBlock" : item.id === "orderedList" ? "insertOrderedList" : item.id === "bulletList" ? "insertUnorderedList" : item.id, item.id === "code" ? "pre" : undefined)}
-                          className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all hover:-translate-y-0.5 hover:shadow-lg ${active ? "bg-indigo-500 text-white shadow-indigo-500/20" : "text-[var(--text-dim)] hover:bg-white/10 hover:text-[var(--text-main)]"}`}
-                          title={item.label}
-                        >
-                          {item.icon}
-                          <span className="hidden sm:inline">{item.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div ref={toolbarRef} className="sticky top-4 z-20 -mx-1 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] p-2 shadow-lg">
+                <div className="flex flex-col gap-2">
+                  {/* Primary Formatting Tools */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center gap-1 rounded-lg border border-[var(--border-main)] bg-[var(--bg-main)] p-1">
+                      {toolbarItems.slice(0, 5).map((item) => {
+                        const active = activeMarks[item.id];
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              if (item.id === "code") {
+                                exec("formatBlock", "pre");
+                              } else if (item.id === "orderedList") {
+                                exec("insertOrderedList");
+                              } else if (item.id === "bulletList") {
+                                exec("insertUnorderedList");
+                              } else if (item.id === "strikethrough") {
+                                exec("strikethrough");
+                              } else {
+                                exec(item.id);
+                              }
+                            }}
+                            className={`inline-flex items-center justify-center gap-2 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium transition-all hover:shadow-lg ${active ? "bg-[var(--accent-primary)] text-white shadow-lg" : "text-[var(--text-secondary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-main)]"}`}
+                            title={item.label}
+                          >
+                            {item.icon}
+                            <span className="hidden md:inline">{item.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
 
-                  <div className="flex flex-1 items-center justify-end gap-2">
-                    <button onClick={() => exec("formatBlock", "h2")} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-[var(--text-dim)] transition-all hover:-translate-y-0.5 hover:bg-white/10 hover:text-[var(--text-main)]">
-                      <Heading2 className="w-4 h-4" />
-                      Heading
-                    </button>
-                    <button onClick={() => exec("formatBlock", "blockquote")} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-[var(--text-dim)] transition-all hover:-translate-y-0.5 hover:bg-white/10 hover:text-[var(--text-main)]">
-                      <MessageSquareQuote className="w-4 h-4" />
-                      Quote
-                    </button>
-                    <button onClick={() => exec("insertHTML", '<div class="todo-line">☐ Todo item</div>')} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-[var(--text-dim)] transition-all hover:-translate-y-0.5 hover:bg-white/10 hover:text-[var(--text-main)]">
-                      <Slash className="w-4 h-4" />
-                      Todo
-                    </button>
+                    {/* Lists Group */}
+                    <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-white/5 p-1">
+                      {toolbarItems.slice(5, 7).map((item) => {
+                        const active = activeMarks[item.id];
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              if (item.id === "orderedList") {
+                                exec("insertOrderedList");
+                              } else if (item.id === "bulletList") {
+                                exec("insertUnorderedList");
+                              } else {
+                                exec(item.id);
+                              }
+                            }}
+                            className={`inline-flex items-center justify-center gap-2 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium transition-all hover:shadow-lg ${active ? "bg-indigo-500 text-white shadow-indigo-500/20" : "text-[var(--text-dim)] hover:bg-white/10 hover:text-[var(--text-main)]"}`}
+                            title={item.label}
+                          >
+                            {item.icon}
+                            <span className="hidden md:inline">{item.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="flex-1" />
+
+                    {/* Block Elements & Actions */}
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2 justify-end">
+                      <button 
+                        onClick={() => exec("formatBlock", "h2")} 
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-main)] px-2.5 py-2 text-xs sm:text-sm font-medium text-[var(--text-secondary)] transition-all hover:-translate-y-0.5 hover:bg-[var(--bg-card)] hover:text-[var(--text-main)]"
+                        title="Heading"
+                      >
+                        <Heading2 className="w-4 h-4" />
+                        <span className="hidden lg:inline">Heading</span>
+                      </button>
+                      <button 
+                        onClick={() => exec("formatBlock", "blockquote")} 
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-main)] px-2.5 py-2 text-xs sm:text-sm font-medium text-[var(--text-secondary)] transition-all hover:-translate-y-0.5 hover:bg-[var(--bg-card)] hover:text-[var(--text-main)]"
+                        title="Quote"
+                      >
+                        <MessageSquareQuote className="w-4 h-4" />
+                        <span className="hidden lg:inline">Quote</span>
+                      </button>
+                      <button 
+                        onClick={() => exec("insertHTML", '<div class="todo-line" style="display:flex;align-items:center;gap:8px;margin:4px 0;">☐ <span>Task item</span></div>')} 
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-main)] px-2.5 py-2 text-xs sm:text-sm font-medium text-[var(--text-secondary)] transition-all hover:-translate-y-0.5 hover:bg-[var(--bg-card)] hover:text-[var(--text-main)]"
+                        title="Todo"
+                      >
+                        <Slash className="w-4 h-4" />
+                        <span className="hidden lg:inline">Todo</span>
+                      </button>
+                      <div className="h-5 w-px bg-white/10" />
+                      <button 
+                        onClick={() => setActiveAiAction("improve")} 
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-2 text-xs sm:text-sm font-medium text-[var(--accent-primary)] transition-all hover:-translate-y-0.5 hover:bg-[var(--accent-primary)]/20 hover:shadow-lg"
+                        title="AI Tools"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        <span className="hidden lg:inline">AI</span>
+                      </button>
+                      <button 
+                        onClick={shareNote} 
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-main)] px-2.5 py-2 text-xs sm:text-sm font-medium text-[var(--text-secondary)] transition-all hover:-translate-y-0.5 hover:bg-[var(--bg-card)] hover:text-[var(--text-main)]"
+                        title="Share"
+                      >
+                        <Share2 className="w-4 h-4" />
+                        <span className="hidden lg:inline">Share</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -559,9 +665,8 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
                 )}
               </AnimatePresence>
 
-              <div ref={editorShellRef} className="relative flex-1 rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-300 focus-within:border-indigo-500/40 focus-within:shadow-[0_0_0_1px_rgba(79,112,255,0.22),0_24px_60px_rgba(2,6,23,0.4)]">
-                <div className={`absolute inset-0 rounded-[30px] bg-[radial-gradient(circle_at_top_left,rgba(79,112,255,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(139,92,246,0.06),transparent_24%)] transition-opacity duration-300 ${editorFocused ? "opacity-100" : "opacity-0"}`} />
-                <div className="relative h-full rounded-[26px] border border-white/5 bg-slate-950/55 px-5 py-5 sm:px-7 sm:py-8">
+              <div ref={editorShellRef} className="relative flex-1 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] p-1 transition-all duration-300 focus-within:border-[var(--accent-primary)]">
+                <div className="relative h-full rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] px-5 py-5 sm:px-7 sm:py-8">
                   <div className="mb-4 flex items-center justify-between gap-4 text-xs uppercase tracking-[0.3em] text-[var(--text-dim)]">
                     <span className="inline-flex items-center gap-2"><AlignLeft className="w-3.5 h-3.5" /> Type / for commands</span>
                     <span className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 normal-case tracking-normal">Focus mode</span>
@@ -604,7 +709,7 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
                       document.execCommand("insertText", false, "\n\n");
                       pushRecentAction(`Loaded ${template}`);
                     }}
-                    className="group rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left transition-all hover:-translate-y-0.5 hover:border-indigo-500/30 hover:bg-indigo-500/10"
+                    className="group rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] px-4 py-3 text-left transition-all hover:-translate-y-0.5 hover:border-[var(--accent-primary)]/30 hover:bg-[var(--accent-primary)]/10"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="font-semibold text-[var(--text-main)]">{template}</span>
@@ -618,25 +723,25 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
           </main>
 
           <aside className="space-y-5">
-            <section className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.3)] backdrop-blur-2xl">
+            <section className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-300">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] text-[var(--accent-primary)]">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-indigo-300">Sphere AI Assistant</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-[var(--accent-primary)]">Sphere AI Assistant</p>
                   <h2 className="text-lg font-semibold text-[var(--text-main)]">AI writing tools</h2>
                 </div>
               </div>
 
-              <div className="mb-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+              <div className="mb-4 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] p-4">
                 <p className="text-sm text-[var(--text-dim)]">{aiBusy ? "Processing with Sphere AI…" : aiStatus}</p>
                 <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/5">
                   <motion.div
                     initial={false}
                     animate={{ width: aiBusy ? "100%" : "32%" }}
                     transition={{ duration: aiBusy ? 1.2 : 0.4, ease: "easeInOut" }}
-                    className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-400"
+                    className="h-full rounded-full bg-[var(--accent-primary)]"
                   />
                 </div>
               </div>
@@ -665,10 +770,10 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
               </div>
             </section>
 
-            <section className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.3)] backdrop-blur-2xl">
+            <section className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-indigo-300">Save & Export</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-[var(--accent-primary)]">Save & Export</p>
                   <h3 className="text-lg font-semibold text-[var(--text-main)]">Action hierarchy</h3>
                 </div>
                 <MoreHorizontal className="w-4 h-4 text-[var(--text-dim)]" />
@@ -680,18 +785,18 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
                 <ActionButton onClick={duplicateNote} icon={<Copy className="w-4 h-4" />} label="Duplicate" />
                 <ActionButton onClick={exportMarkdown} icon={<FileDown className="w-4 h-4" />} label="Export" />
               </div>
-              <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-300">
+              <div className="mt-4 rounded-lg border border-[var(--border-main)] bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-400">
                 {shareState || "✓ Synced to Cloud"}
               </div>
             </section>
 
-            <section className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.3)] backdrop-blur-2xl">
+            <section className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10 text-cyan-300">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] text-[var(--accent-primary)]">
                   <GitBranch className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-cyan-300">Document Analytics</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-[var(--accent-primary)]">Document Analytics</p>
                   <h3 className="text-lg font-semibold text-[var(--text-main)]">Workspace insights</h3>
                 </div>
               </div>
@@ -703,20 +808,20 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
               </div>
             </section>
 
-            <section className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.3)] backdrop-blur-2xl">
+            <section className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-500/20 bg-violet-500/10 text-violet-300">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] text-[var(--accent-primary)]">
                   <Flame className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-violet-300">Recent Actions</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-[var(--accent-primary)]">Recent Actions</p>
                   <h3 className="text-lg font-semibold text-[var(--text-main)]">Activity stream</h3>
                 </div>
               </div>
               <div className="space-y-2">
                 {recentActions.map((action) => (
-                  <div key={action} className="flex items-center gap-3 rounded-2xl border border-white/5 bg-slate-950/45 px-4 py-3 text-sm text-[var(--text-dim)]">
-                    <span className="h-2.5 w-2.5 rounded-full bg-indigo-400" />
+                  <div key={action} className="flex items-center gap-3 rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] px-4 py-3 text-sm text-[var(--text-dim)]">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent-primary)]" />
                     <span>{action}</span>
                   </div>
                 ))}
@@ -733,7 +838,7 @@ function ActionButton({ onClick, icon, label, primary = false }: { onClick: () =
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg ${primary ? "border-indigo-500/20 bg-indigo-600 text-white hover:bg-indigo-500" : "border-white/10 bg-white/5 text-[var(--text-main)] hover:bg-white/10"}`}
+      className={`inline-flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg ${primary ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-white hover:brightness-110" : "border-[var(--border-main)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-card)]"}`}
     >
       <span className="inline-flex items-center gap-2">{icon}{label}</span>
       <ChevronRight className="w-4 h-4 opacity-60" />
@@ -743,7 +848,7 @@ function ActionButton({ onClick, icon, label, primary = false }: { onClick: () =
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-4">
+    <div className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] p-4">
       <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--text-dim)]">{label}</p>
       <p className="mt-2 text-xl font-semibold text-[var(--text-main)]">{value}</p>
     </div>
