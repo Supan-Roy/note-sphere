@@ -8,6 +8,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import { Dashboard } from "./components/Dashboard";
 import { StudyToolkit } from "./components/StudyToolkit";
+import { PreparationMode } from "./components/PreparationMode";
 import { KnowledgeGraph } from "./components/KnowledgeGraph";
 import { NoteDetail } from "./components/NoteDetail";
 import { SemesterBuilder } from "./components/SemesterBuilder";
@@ -427,6 +428,8 @@ export default function App() {
         return <NoteComposer onBack={() => navigateToTab("dashboard")} onSaveCloud={handleSaveCloudNote} onViewNotes={() => navigateToTab("my-notes")} />;
       case "toolkit":
         return <StudyToolkit notes={notes} />;
+      case "preparation":
+        return <PreparationMode notes={notes} onSaveCloud={handleSaveCloudNote} onBack={() => navigateToTab("dashboard")} />;
       case "ask":
         return <AskNotes notes={notes} initialNoteId={initialChatNoteId} onAddNote={(note) => setNotes(prev => [note, ...prev])} />;
       case "graph":

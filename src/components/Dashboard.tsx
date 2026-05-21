@@ -166,6 +166,14 @@ export function Dashboard({ notes, trashItems = [], onNoteOpen, onChatOpen, onCr
       badge: "Library",
     },
     {
+      id: "preparation",
+      title: "Preparation Mode",
+      description: "Select a note or upload a file instantly, then generate quizzes, summaries, and timed live exams with Gemini.",
+      icon: Sparkles,
+      onClick: () => onNavigate && onNavigate('preparation'),
+      badge: "Study",
+    },
+    {
       title: "Sharing Room",
       description: "Collaborate in shared rooms and manage public note collections.",
       icon: Share2,
@@ -208,10 +216,6 @@ export function Dashboard({ notes, trashItems = [], onNoteOpen, onChatOpen, onCr
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.16),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.12),transparent_32%)]" />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-300">
-              <Sparkles className="w-3 h-3" />
-              Feature hub
-            </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-[var(--text-main)]">{title}</h1>
             {!isMyNotes && (
               <p className="text-[var(--text-dim)] max-w-xl">

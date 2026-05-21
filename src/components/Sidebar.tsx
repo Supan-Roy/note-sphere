@@ -15,6 +15,7 @@ import {
   ChevronRight,
   GraduationCap,
   Crown,
+  Sparkles,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -31,6 +32,7 @@ const navItems = [
   { id: "semester", label: "Manage Semesters", icon: GraduationCap },
   { id: "tasks", label: "My Tasks", icon: Library },
   { id: "my-notes", label: "My Notes", icon: FileText },
+  { id: "preparation", label: "Preparation Mode", icon: Sparkles },
   { id: "shared-notes", label: "Sharing Room", icon: Share2 },
   { id: "toolkit", label: "Note Toolkit", icon: Wand2 },
   { id: "ask", label: "Ask Your Notes", icon: MessageSquareText },
@@ -66,6 +68,7 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
+          const isPreparation = item.id === "preparation";
 
           return (
             <button
@@ -74,16 +77,20 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
                 setActiveTab(item.id);
               }}
               className={`sidebar-nav-item w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2 rounded-lg transition-all duration-200 ${
-                isActive 
-                  ? "bg-[var(--bg-elevated)] text-[var(--accent-primary)] border-[var(--border-main)]" 
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)] border-transparent"
+                isPreparation
+                  ? isActive
+                    ? "border border-fuchsia-400/30 bg-gradient-to-r from-fuchsia-500/20 via-rose-500/15 to-amber-400/10 text-[var(--text-main)] shadow-[0_10px_30px_rgba(217,70,239,0.12)]"
+                    : "border border-fuchsia-400/15 bg-gradient-to-r from-fuchsia-500/10 via-rose-500/10 to-amber-400/5 text-[var(--text-main)] hover:border-fuchsia-400/25 hover:bg-gradient-to-r hover:from-fuchsia-500/15 hover:via-rose-500/12 hover:to-amber-400/10"
+                  : isActive 
+                    ? "bg-[var(--bg-elevated)] text-[var(--accent-primary)] border-[var(--border-main)]" 
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)] border-transparent"
               }`}
               title={isCollapsed ? item.label : undefined}
             >
-              <Icon className={`sidebar-nav-icon w-5 h-5 transition-transform ${isActive ? "text-[var(--accent-primary)]" : ""}`} />
+              <Icon className={`sidebar-nav-icon w-5 h-5 transition-transform ${isPreparation ? "text-[var(--text-main)]" : isActive ? "text-[var(--accent-primary)]" : ""}`} />
               {!isCollapsed && <span className="sidebar-nav-label text-sm font-medium">{item.label}</span>}
               {isActive && !isCollapsed && (
-                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
+                <div className={`ml-auto w-1.5 h-1.5 rounded-full ${isPreparation ? "bg-amber-300" : "bg-[var(--accent-primary)]"}`} />
               )}
             </button>
           );

@@ -252,6 +252,123 @@
     box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
   }
 
+  /* Preparation Mode visibility fixes for light mode */
+  .prep-premium-shell .prep-hero,
+  .prep-premium-shell .prep-gradient-card {
+    color: #ffffff !important;
+  }
+
+  :root.light .prep-premium-shell {
+    color: #0f172a !important;
+  }
+
+  :root.light .prep-premium-shell [class*="text-[var(--text-dim)]"],
+  :root.light .prep-premium-shell [class*="text-[var(--text-secondary)]"] {
+    color: #0f172a !important;
+    opacity: 0.72;
+  }
+
+  .prep-premium-shell .prep-hero svg,
+  .prep-premium-shell .prep-gradient-card svg,
+  .prep-premium-shell .prep-hero .text-fuchsia-200,
+  .prep-premium-shell .prep-hero .text-fuchsia-300,
+  .prep-premium-shell .prep-hero .text-white,
+  .prep-premium-shell .prep-gradient-card .text-white,
+  .prep-premium-shell .prep-gradient-card .text-white\/80,
+  .prep-premium-shell .prep-gradient-card .text-white\/90 {
+    color: #ffffff !important;
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  .prep-premium-shell .prep-hero {
+    border-color: rgba(236, 72, 153, 0.22) !important;
+    box-shadow: 0 18px 50px rgba(236, 72, 153, 0.12), 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+  }
+
+  .prep-premium-shell .prep-soft-panel {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98)) !important;
+    border-color: #d6dbe6 !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+  }
+
+  :root.light .prep-premium-shell .prep-soft-panel {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 250, 251, 0.99)) !important;
+    border-color: #bfc9d8 !important;
+    color: #0f172a !important;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.09), 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+  }
+
+  .prep-premium-shell .prep-soft-control {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-color: #cfd7e4 !important;
+    color: #0f172a !important;
+  }
+
+  :root.light .prep-premium-shell .prep-soft-control {
+    background: #ffffff !important;
+    border-color: #bfc9d8 !important;
+    color: #0f172a !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+  }
+
+  .prep-premium-shell .prep-soft-control:hover {
+    background: #ffffff !important;
+    border-color: #b8c2d3 !important;
+  }
+
+  .prep-premium-shell .prep-gradient-control,
+  .prep-premium-shell .prep-gradient-control span,
+  .prep-premium-shell .prep-gradient-control svg,
+  .prep-premium-shell .prep-hero .text-fuchsia-100,
+  .prep-premium-shell .prep-hero .text-fuchsia-200,
+  .prep-premium-shell .prep-hero .text-fuchsia-300,
+  .prep-premium-shell .prep-hero .text-white,
+  .prep-premium-shell .prep-hero .text-white\/80,
+  .prep-premium-shell .prep-hero .text-white\/90,
+  .prep-premium-shell .prep-gradient-card .text-fuchsia-100,
+  .prep-premium-shell .prep-gradient-card .text-fuchsia-200,
+  .prep-premium-shell .prep-gradient-card .text-white,
+  .prep-premium-shell .prep-gradient-card .text-white\/80,
+  .prep-premium-shell .prep-gradient-card .text-white\/90 {
+    color: #ffffff !important;
+  }
+
+  :root.light .prep-premium-shell .prep-gradient-card,
+  :root.light .prep-premium-shell .prep-gradient-control {
+    color: #0f172a !important;
+  }
+
+  :root.light .prep-premium-shell .prep-gradient-card svg,
+  :root.light .prep-premium-shell .prep-gradient-control svg {
+    color: #0f172a !important;
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  :root.light .prep-premium-shell .prep-gradient-card .text-white,
+  :root.light .prep-premium-shell .prep-gradient-card .text-white\/75,
+  :root.light .prep-premium-shell .prep-gradient-card .text-white\/80,
+  :root.light .prep-premium-shell .prep-gradient-card .text-white\/90,
+  :root.light .prep-premium-shell .prep-gradient-control .text-white,
+  :root.light .prep-premium-shell .prep-gradient-control .text-white\/75,
+  :root.light .prep-premium-shell .prep-gradient-control .text-white\/80,
+  :root.light .prep-premium-shell .prep-gradient-control .text-white\/90 {
+    color: #0f172a !important;
+  }
+
+  .prep-premium-shell .prep-gradient-control {
+    box-shadow: 0 12px 28px rgba(217, 70, 239, 0.12) !important;
+  }
+
+  .prep-premium-shell .prep-gradient-control:hover {
+    box-shadow: 0 16px 34px rgba(217, 70, 239, 0.16) !important;
+  }
+
+  .prep-premium-shell .glass-card {
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.05);
+  }
+
   /* Input fields and textareas */
   input,
   textarea,

@@ -235,6 +235,189 @@ app.post("/api/generate-quiz", async (req, res) => {
   }
 });
 
+// 5. Preparation Mode Summary Generation
+app.post("/api/preparation-summary", async (req, res) => {
+  try {
+    const { title, context } = req.body;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: {
+        parts: [
+          {
+            text: `Create a premium exam-prep summary for the following note or document. Keep it concise, high-yield, and practical. Return a JSON object with: title, summary, keyTakeaways (5 items), weakAreas (3 items), and nextSteps (3 items). Use the source title when helpful: ${title || "Untitled Source"}.\n\nSOURCE:\n${context || "No content provided."}`
+          }
+        ]
+      },
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING },
+            summary: { type: Type.STRING },
+            keyTakeaways: { type: Type.ARRAY, items: { type: Type.STRING } },
+            weakAreas: { type: Type.ARRAY, items: { type: Type.STRING } },
+            nextSteps: { type: Type.ARRAY, items: { type: Type.STRING } }
+          },
+          required: ["title", "summary", "keyTakeaways", "weakAreas", "nextSteps"]
+        }
+      }
+    });
+
+    try {
+      const respText = response.text || "{}";
+      const cleaned = respText.replace(/```json/g, "").replace(/```/g, "").trim();
+      res.json(JSON.parse(cleaned));
+    } catch (parseError) {
+      console.error("Parse error (preparation summary):", response.text);
+      res.status(500).json({ error: "Failed to parse AI response as JSON", raw: response.text });
+    }
+  } catch (error: any) {
+    console.error("Error generating preparation summary:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 6. Preparation Mode Live Exam Generation
+app.post("/api/preparation-exam", async (req, res) => {
+  try {
+    const { title, context, difficulty, questionCount, durationMinutes } = req.body;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: {
+        parts: [
+          {
+            text: `Create a timed live exam paper for preparation mode. Make it premium, fair, and challenging. Generate ${questionCount || 5} open-ended or short-answer questions from the source. The recommended duration is ${durationMinutes || 30} minutes. Difficulty level: ${difficulty || "Medium"}. Return JSON with title, recommendedMinutes, instructions, and questions. Each question should include question, topic, marks, and expectedAnswer. Use the source title when helpful: ${title || "Untitled Source"}.\n\nSOURCE:\n${context || "No content provided."}`
+          }
+        ]
+      },
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING },
+            recommendedMinutes: { type: Type.INTEGER },
+            instructions: { type: Type.STRING },
+            questions: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  question: { type: Type.STRING },
+                  topic: { type: Type.STRING },
+                  marks: { type: Type.INTEGER },
+                  expectedAnswer: { type: Type.STRING }
+                },
+                required: ["question", "topic", "marks", "expectedAnswer"]
+              }
+            }
+          },
+          required: ["title", "recommendedMinutes", "instructions", "questions"]
+        }
+      }
+    });
+
+    try {
+      const respText = response.text || "{}";
+      const cleaned = respText.replace(/```json/g, "").replace(/```/g, "").trim();
+      res.json(JSON.parse(cleaned));
+    } catch (parseError) {
+      console.error("Parse error (preparation exam):", response.text);
+      res.status(500).json({ error: "Failed to parse AI response as JSON", raw: response.text });
+    }
+  } catch (error: any) {
+    console.error("Error generating preparation exam:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 7. Preparation Mode Answer Script Grading
+app.post("/api/preparation-grade", upload.single("file"), async (req, res) => {
+  try {
+    const file = req.file;
+    const { exam, context, difficulty } = req.body;
+
+    if (!file) {
+      return res.status(400).json({ error: "No answer script uploaded" });
+    }
+
+    let examPayload: any = null;
+    try {
+      examPayload = exam ? JSON.parse(exam) : null;
+    } catch {
+      examPayload = null;
+    }
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: {
+        parts: [
+          {
+            text: `You are a strict but fair academic examiner. Grade the uploaded answer script against the exam and source material below. Return JSON with: grade, scorePercent, totalMarks, awardedMarks, feedback, strengths (3-5 items), improvements (3-5 items), and questionWiseFeedback (one item per exam question with question, maxMarks, marksAwarded, and comment). Be careful, concise, and constructive. Difficulty: ${difficulty || "Medium"}.\n\nEXAM JSON:\n${exam || "{}"}\n\nEXAM SOURCE CONTEXT:\n${context || "No context provided."}`
+          },
+          {
+            inlineData: {
+              data: file.buffer.toString("base64"),
+              mimeType: file.mimetype
+            }
+          }
+        ]
+      },
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            grade: { type: Type.STRING },
+            scorePercent: { type: Type.INTEGER },
+            totalMarks: { type: Type.INTEGER },
+            awardedMarks: { type: Type.INTEGER },
+            feedback: { type: Type.STRING },
+            strengths: { type: Type.ARRAY, items: { type: Type.STRING } },
+            improvements: { type: Type.ARRAY, items: { type: Type.STRING } },
+            questionWiseFeedback: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  question: { type: Type.STRING },
+                  maxMarks: { type: Type.INTEGER },
+                  marksAwarded: { type: Type.INTEGER },
+                  comment: { type: Type.STRING }
+                },
+                required: ["question", "maxMarks", "marksAwarded", "comment"]
+              }
+            }
+          },
+          required: ["grade", "scorePercent", "totalMarks", "awardedMarks", "feedback", "strengths", "improvements", "questionWiseFeedback"]
+        }
+      }
+    });
+
+    try {
+      const respText = response.text || "{}";
+      const cleaned = respText.replace(/```json/g, "").replace(/```/g, "").trim();
+      const parsed = JSON.parse(cleaned);
+
+      if (!parsed.totalMarks && examPayload?.questions) {
+        const totalMarks = examPayload.questions.reduce((sum: number, question: any) => sum + Number(question.marks || 0), 0);
+        parsed.totalMarks = totalMarks;
+      }
+
+      res.json(parsed);
+    } catch (parseError) {
+      console.error("Parse error (preparation grade):", response.text);
+      res.status(500).json({ error: "Failed to parse AI response as JSON", raw: response.text });
+    }
+  } catch (error: any) {
+    console.error("Error grading preparation answer script:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // 5. Handwritten Note to Text/PDF (OCR)
 app.post("/api/handwritten-ocr", upload.single("file"), async (req, res) => {
   try {
