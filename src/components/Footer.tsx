@@ -1,10 +1,10 @@
 import { Github, Linkedin, Facebook, Mail, ArrowRight, GraduationCap } from "lucide-react";
 
 const quickLinks = [
-  { label: "Dashboard", href: "#dashboard" },
-  { label: "My Notes", href: "#my-notes" },
-  { label: "Upload Center", href: "#upload" },
-  { label: "Study Toolkit", href: "#toolkit" },
+  { label: "Dashboard", tab: "dashboard" },
+  { label: "My Notes", tab: "my-notes" },
+  { label: "Study Toolkit", tab: "toolkit" },
+  { label: "Trash Bin", tab: "trash" },
 ];
 
 const socialLinks = [
@@ -14,7 +14,7 @@ const socialLinks = [
   { label: "Contact", value: "contact@supanroy.com", href: "mailto:contact@supanroy.com", icon: Mail },
 ];
 
-export function Footer() {
+export function Footer({ onNavigate }: { onNavigate?: (tab: string) => void }) {
   return (
     <footer className="shrink-0 border-t border-[var(--border-main)] bg-[var(--bg-card)] backdrop-blur-xl">
       <div className="px-8 py-8">
@@ -43,14 +43,15 @@ export function Footer() {
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--text-main)]">Quick Links</p>
             <div className="grid gap-3">
               {quickLinks.map((link) => (
-                <a
+                <button
                   key={link.label}
-                  href={link.href}
-                  className="inline-flex items-center gap-2 text-sm text-[var(--text-dim)] transition-colors hover:text-[var(--text-main)]"
+                  type="button"
+                  onClick={() => onNavigate?.(link.tab)}
+                  className="inline-flex items-center gap-2 text-left text-sm text-[var(--text-dim)] transition-colors hover:text-[var(--text-main)]"
                 >
                   <ArrowRight className="h-4 w-4 text-sky-400" />
                   <span>{link.label}</span>
-                </a>
+                </button>
               ))}
             </div>
           </div>

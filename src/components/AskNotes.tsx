@@ -166,7 +166,7 @@ export function AskNotes({ notes, initialNoteId, onAddNote }: { notes: Note[], i
                    <FileText className="w-10 h-10 text-red-400" />
                 </div>
                 <h3 className="text-xl font-bold text-[var(--text-main)]">No content uploaded</h3>
-                <p className="text-sm text-[var(--text-dim)] max-w-xs mx-auto">Go to the Upload Center to add your study materials before using the AI assistant.</p>
+                <p className="text-sm text-[var(--text-dim)] max-w-xs mx-auto">Upload study materials first to add them before using the AI assistant.</p>
              </div>
           </div>
         )}
@@ -204,22 +204,24 @@ export function AskNotes({ notes, initialNoteId, onAddNote }: { notes: Note[], i
               <button onClick={() => { setInput(`Explain the main concepts in simple terms from note: ${selectedNote ? selectedNote.title : ''}`); handleSend(); }} className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm">Explain</button>
             </div>
 
-             <input 
-               type="text"
-               value={input}
-               onChange={(e) => setInput(e.target.value)}
-               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-               placeholder={selectedNote ? `Discuss "${selectedNote.title}"...` : "Select a note first..."}
-               disabled={!selectedNote || isLoading}
-               className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 transition-all shadow-2xl"
-             />
-             <button 
-               onClick={handleSend}
-               disabled={!selectedNote || isLoading || !input.trim()}
-               className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-indigo-600 rounded-xl text-white hover:bg-indigo-700 disabled:opacity-50 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/20"
-             >
-               <Send className="w-5 h-5" />
-             </button>
+            <div className="relative">
+              <input 
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                placeholder={selectedNote ? `Discuss "${selectedNote.title}"...` : "Select a note first..."}
+                disabled={!selectedNote || isLoading}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 transition-all shadow-2xl"
+              />
+              <button 
+                onClick={handleSend}
+                disabled={!selectedNote || isLoading || !input.trim()}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-indigo-600 rounded-xl text-white hover:bg-indigo-700 disabled:opacity-50 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/20"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </div>
           </div>
           <p className="text-[10px] text-gray-600 mt-4 text-center">
             AI Assistant powered by Gemini 3 Flash • Trained on academic contexts

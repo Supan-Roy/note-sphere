@@ -2,8 +2,8 @@ import { motion } from "motion/react";
 import { 
   LayoutDashboard, 
   FileText, 
+  Trash2,
   Share2, 
-  UploadCloud, 
   Wand2, 
   MessageSquareText, 
   Network, 
@@ -32,10 +32,10 @@ const navItems = [
   { id: "tasks", label: "My Tasks", icon: Library },
   { id: "my-notes", label: "My Notes", icon: FileText },
   { id: "shared-notes", label: "Sharing Room", icon: Share2 },
-  { id: "upload", label: "Upload Center", icon: UploadCloud },
   { id: "toolkit", label: "Note Toolkit", icon: Wand2 },
   { id: "ask", label: "Ask Your Notes", icon: MessageSquareText },
   { id: "graph", label: "Knowledge Graph", icon: Network },
+  { id: "trash", label: "Trash Bin", icon: Trash2 },
 ];
 
 export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse, onBuyPlan, isMobileScreen }: SidebarProps) {

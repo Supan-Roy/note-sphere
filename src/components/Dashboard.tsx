@@ -12,9 +12,12 @@ import {
   FileText,
   Sparkles,
   ArrowRight,
+  Trash2,
+  Clock3,
+  Archive,
 } from "lucide-react";
 import { NoteCard } from "./NoteCard";
-import { Note } from "../types";
+import { Note, TrashItem } from "../types";
 
 const DUMMY_NOTES: Note[] = [
   {
@@ -69,13 +72,77 @@ const DUMMY_NOTES: Note[] = [
   }
 ];
 
-export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewNotes, onNavigate, onDeleteNote, title = "Welcome back, Supan" }: { notes: Note[], onNoteOpen: (note: Note) => void, onChatOpen: (id: string) => void, onCreateNote: () => void, onViewNotes: () => void, onNavigate?: (tab: string) => void, onDeleteNote?: (id: string) => void, title?: string }) {
+export function Dashboard({ notes, trashItems = [], onNoteOpen, onChatOpen, onCreateNote, onViewNotes, onNavigate, onDeleteNote, onRestoreTrash, onEmptyTrash, onUploadFiles, onShareNote, title = "Welcome back, Supan" }: { notes: Note[], trashItems?: TrashItem[], onNoteOpen: (note: Note) => void, onChatOpen: (id: string) => void, onCreateNote: () => void, onViewNotes: () => void, onNavigate?: (tab: string) => void, onDeleteNote?: (id: string) => void, onRestoreTrash?: (itemId: string) => void, onEmptyTrash?: () => void, onUploadFiles?: () => void, onShareNote?: (note: Note) => void, title?: string }) {
   // If we have real notes, we only show real ones. 
   // If we have zero notes, we show dummy notes ONLY on the main dashboard overview.
   // In "My Notes", if we have zero, we show an empty state.
   const isMyNotes = title === "My Notes";
+  const isTrash = title === "Trash Bin";
   const hasNotes = notes.length > 0;
   const displayNotes = hasNotes ? notes : (isMyNotes ? [] : DUMMY_NOTES);
+  if (isTrash) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 animate-in fade-in duration-700">
+        <section className="space-y-4">
+          <div className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.28em] text-amber-300">
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Trash Bin
+                </div>
+                <h3 className="text-xl font-bold text-[var(--text-main)]">Deleted items</h3>
+                <p className="text-sm text-[var(--text-dim)]">Items will be deleted after 30 days automatically.</p>
+              </div>
+              <button
+                onClick={onEmptyTrash}
+                disabled={trashItems.length === 0}
+                className="inline-flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-300 transition-all hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Empty bin
+              </button>
+            </div>
+          </div>
+
+          {trashItems.length === 0 ? (
+            <div className="glass-card border-dashed border-[var(--border-main)] p-8 text-center">
+              <Archive className="mx-auto h-10 w-10 text-[var(--text-dim)]" />
+              <h3 className="mt-4 text-xl font-bold text-[var(--text-main)]">Trash is empty</h3>
+              <p className="mt-2 text-[var(--text-dim)]">Deleted notes, files, courses, and semesters will appear here before permanent removal.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {trashItems.map((item) => (
+                <div key={item.id} className="glass-card p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--text-dim)]">{item.kind}</p>
+                      <h3 className="mt-2 text-lg font-semibold text-[var(--text-main)]">{item.title}</h3>
+                    </div>
+                    <Trash2 className="h-4 w-4 text-[var(--text-dim)]" />
+                  </div>
+                  <p className="mt-3 text-sm text-[var(--text-dim)]">From {item.source}</p>
+                  {item.details && <p className="mt-2 text-sm text-[var(--text-secondary)]">{item.details}</p>}
+                  <div className="mt-4 flex items-center justify-between gap-3 text-xs text-[var(--text-dim)]">
+                    <div className="flex items-center gap-2">
+                      <Clock3 className="h-3.5 w-3.5" />
+                      Auto-delete in 30 days
+                    </div>
+                    <button
+                      onClick={() => onRestoreTrash?.(item.id)}
+                      className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] px-3 py-1.5 text-xs font-semibold text-[var(--text-main)] transition-all hover:bg-[var(--bg-card)]"
+                    >
+                      Restore
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    );
+  }
     const featureCards = [
     {
       title: "Manage Semesters",
@@ -106,13 +173,6 @@ export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewN
       badge: "Community",
     },
     {
-      title: "Upload Center",
-      description: "Upload PDFs, images, and audio to build your note workspace faster.",
-      icon: UploadCloud,
-      onClick: () => onNavigate && onNavigate('upload'),
-      badge: "Ingest",
-    },
-    {
       title: "Note Toolkit",
       description: "Generate summaries, flashcards, roadmaps, quizzes, and OCR with one click.",
       icon: Wand2,
@@ -133,6 +193,13 @@ export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewN
       onClick: () => onNavigate && onNavigate('graph'),
       badge: "Explore",
     },
+    {
+      title: "Trash Bin",
+      description: "Review deleted notes and files before permanent removal.",
+      icon: Trash2,
+      onClick: () => onNavigate && onNavigate('trash'),
+      badge: "Cleanup",
+    },
   ];
 
   return (
@@ -146,11 +213,11 @@ export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewN
               Feature hub
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-[var(--text-main)]">{title}</h1>
-            <p className="text-[var(--text-dim)] max-w-xl">
-              {isMyNotes
-                ? `Manage your saved notes, open them for review, or share them with a link.`
-                : `Access your study tools, notes, tasks, upload flow, and graph explorer from one professional dashboard.`}
-            </p>
+            {!isMyNotes && (
+              <p className="text-[var(--text-dim)] max-w-xl">
+                Access your study tools, notes, tasks, and graph explorer from one professional dashboard.
+              </p>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -162,7 +229,7 @@ export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewN
               Create Note
             </button>
             <button
-              onClick={() => onNavigate ? onNavigate('upload') : undefined}
+              onClick={onUploadFiles}
               className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-sm px-4 py-3 text-sm font-semibold text-[var(--text-main)] hover:bg-white/10 transition-all"
             >
               <UploadCloud className="w-4 h-4" />
@@ -180,28 +247,30 @@ export function Dashboard({ notes, onNoteOpen, onChatOpen, onCreateNote, onViewN
       </header>
 
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-[var(--text-dim)]" />
-              Quick Access
-            </h2>
-            <p className="text-sm text-[var(--text-dim)]">Your main study tools, surfaced as polished shortcuts.</p>
+        {!isMyNotes && (
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[var(--text-dim)]" />
+                Quick Access
+              </h2>
+              <p className="text-sm text-[var(--text-dim)]">Your main study tools, surfaced as polished shortcuts.</p>
+            </div>
+            <button onClick={onViewNotes} className="text-sm font-bold text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1">Open Notes <ArrowRight className="w-4 h-4" /></button>
           </div>
-          {!isMyNotes && <button onClick={onViewNotes} className="text-sm font-bold text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1">Open Notes <ArrowRight className="w-4 h-4" /></button>}
-        </div>
+        )}
 
         {isMyNotes ? (
           <div>
             {displayNotes.length === 0 ? (
               <div className="glass-card p-8 border border-white/5 text-center">
                 <h3 className="text-xl font-bold text-[var(--text-main)]">No notes yet</h3>
-                <p className="text-[var(--text-dim)]">You don't have any saved notes. Use Create Note or Upload to add notes to My Notes.</p>
+                <p className="text-[var(--text-dim)]">You don't have any saved notes. Use Create Note or the Upload button to add notes to My Notes.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                 {displayNotes.map((note) => (
-                  <NoteCard key={note.id} note={note} onOpen={onNoteOpen} onChat={() => onChatOpen(note.id)} onDelete={() => onDeleteNote ? onDeleteNote(note.id) : undefined} />
+                  <NoteCard key={note.id} note={note} onOpen={onNoteOpen} onChat={() => onChatOpen(note.id)} onShare={onShareNote ? () => onShareNote(note) : undefined} onDelete={() => onDeleteNote ? onDeleteNote(note.id) : undefined} />
                 ))}
               </div>
             )}

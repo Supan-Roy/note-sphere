@@ -21,9 +21,9 @@ import {
   BookOpenText,
   RefreshCw,
 } from "lucide-react";
-import { Semester, Course, CourseMaterial, CourseMaterialType } from "../types";
+import { Semester, Course, CourseMaterial, CourseMaterialType, TrashItem } from "../types";
 
-export function SemesterBuilder({ semesters, setSemesters }: { semesters: Semester[], setSemesters: React.Dispatch<React.SetStateAction<Semester[]>> }) {
+export function SemesterBuilder({ semesters, setSemesters, onTrash }: { semesters: Semester[], setSemesters: React.Dispatch<React.SetStateAction<Semester[]>>, onTrash?: (item: Omit<TrashItem, "id" | "deletedAt" | "expiresAt">) => void }) {
   const [isParsing, setIsParsing] = useState(false);
   const [activeManualName, setActiveManualName] = useState("");
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
@@ -134,6 +134,16 @@ export function SemesterBuilder({ semesters, setSemesters }: { semesters: Semest
   };
 
   const removeSemester = (id: string) => {
+    const semester = semesters.find((sem) => sem.id === id);
+    if (semester && onTrash) {
+      onTrash({
+        kind: "semester",
+        title: semester.name,
+        source: "Semester workspace",
+        details: `${semester.courses.length} courses and their files were removed.`,
+        payload: { semester },
+      });
+    }
     setSemesters(semesters.filter(s => s.id !== id));
     if (selectedCourse?.semesterId === id) {
       setSelectedCourse(null);
@@ -141,6 +151,26 @@ export function SemesterBuilder({ semesters, setSemesters }: { semesters: Semest
   };
 
   const removeCourse = (semesterId: string, courseId: string) => {
+    const semester = semesters.find((sem) => sem.id === semesterId);
+    const course = semester?.courses.find((item) => item.id === courseId);
+    if (course && onTrash) {
+      onTrash({
+        kind: "course",
+        title: course.name,
+        source: semester?.name || "Semester workspace",
+        details: `${course.materials?.length || 0} notes/files were removed with this course.`,
+        payload: { semesterId, course },
+      });
+      course.materials?.forEach((material) => {
+        onTrash({
+          kind: "file",
+          title: material.name,
+          source: `${semester?.name || "Semester workspace"} / ${course.name}`,
+          details: `${material.type.toUpperCase()} file`,
+          payload: { semesterId, courseId, material },
+        });
+      });
+    }
     setSemesters(prev => prev.map((sem) => {
       if (sem.id !== semesterId) return sem;
       return {

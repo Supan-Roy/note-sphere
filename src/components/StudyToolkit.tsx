@@ -318,7 +318,7 @@ export function StudyToolkit({ notes }: { notes: Note[] }) {
             <Brain className="w-8 h-8 text-[var(--text-dim)]" />
           </div>
           <div className="max-w-sm">
-            <p className="font-bold text-[var(--text-main)] italic">Upload a note in the Upload Center first to enable these AI tools.</p>
+            <p className="font-bold text-[var(--text-main)] italic">Upload a note first to enable these AI tools.</p>
           </div>
         </div>
       )}

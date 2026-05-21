@@ -1,16 +1,17 @@
 import { motion } from "motion/react";
-import { FileType, MoreVertical, Heart, Bookmark, MessageSquare, ArrowUpRight, MessageSquareText, Trash2 } from "lucide-react";
+import { FileType, MoreVertical, Heart, Bookmark, MessageSquare, ArrowUpRight, MessageSquareText, Trash2, Share2 } from "lucide-react";
 import { Note } from "../types";
 
 interface NoteCardProps {
   note: Note;
   onOpen: (note: Note) => void;
   onChat?: () => void;
+  onShare?: () => void;
   onDelete?: () => void;
   key?: string;
 }
 
-export function NoteCard({ note, onOpen, onChat, onDelete }: NoteCardProps) {
+export function NoteCard({ note, onOpen, onChat, onShare, onDelete }: NoteCardProps) {
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-emerald-400";
     if (score >= 60) return "text-yellow-400";
@@ -89,6 +90,19 @@ export function NoteCard({ note, onOpen, onChat, onDelete }: NoteCardProps) {
           )}
         </div>
           <div className="flex items-center gap-3">
+            {onShare && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShare();
+                }}
+                className="flex items-center gap-1 text-xs font-bold text-cyan-400 hover:text-cyan-300"
+                title="Share note"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                Share
+              </button>
+            )}
             <button className="flex items-center gap-1 text-xs font-bold text-indigo-400 hover:text-indigo-300">
               Open Details
               <ArrowUpRight className="w-3 h-3" />

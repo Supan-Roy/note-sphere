@@ -1,4 +1,4 @@
-export type NoteType = "pdf" | "image" | "audio" | "text";
+export type NoteType = "pdf" | "ppt" | "pptx" | "doc" | "docx" | "image" | "audio" | "text";
 
 export interface Note {
   id: string;
@@ -94,6 +94,26 @@ export interface TaskItem {
   dueTime: string;
   notes: string;
   createdAt: any;
+}
+
+export type TrashItemKind = "note" | "file" | "course" | "semester";
+
+export interface TrashItem {
+  id: string;
+  kind: TrashItemKind;
+  title: string;
+  source: string;
+  deletedAt: any;
+  expiresAt: any;
+  details?: string;
+  payload?: {
+    note?: Note;
+    semester?: Semester;
+    course?: Course;
+    material?: CourseMaterial;
+    semesterId?: string;
+    courseId?: string;
+  };
 }
 
 // Feature 2: Sharing Room Types

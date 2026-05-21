@@ -6,6 +6,7 @@ export function FloatingAI() {
   const [isOpen, setIsOpen] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
   const [showIntroPulse, setShowIntroPulse] = useState(false);
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
   const [messages, setMessages] = useState<{role: string, content: string}[]>([
     { role: "assistant", content: "Hi! I'm Note Sphere AI. Ask me anything about your studies or notes." }
   ]);
@@ -26,6 +27,21 @@ export function FloatingAI() {
     }, 2300);
 
     return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    const updateMobileState = () => {
+      const mobile = window.innerWidth <= window.innerHeight;
+      setIsMobileScreen(mobile);
+      if (mobile) {
+        setShowPrompt(false);
+        setIsOpen(false);
+      }
+    };
+
+    updateMobileState();
+    window.addEventListener("resize", updateMobileState);
+    return () => window.removeEventListener("resize", updateMobileState);
   }, []);
 
   useEffect(() => {
@@ -192,11 +208,13 @@ export function FloatingAI() {
           className={`relative rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${
             isOpen 
               ? 'bg-white/5 text-[var(--text-dim)] border border-[var(--border-main)] rotate-90 w-14 h-14' 
-              : '!bg-red-600 !text-white shadow-red-600/40 px-4 h-14 gap-2'
+              : isMobileScreen
+                ? '!bg-red-600/90 !text-white border border-red-300/20 shadow-[0_18px_40px_rgba(220,38,38,0.38)] backdrop-blur-md w-14 h-14 ring-1 ring-white/10 before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-b before:from-white/20 before:via-white/5 before:to-transparent before:pointer-events-none after:absolute after:inset-0 after:rounded-full after:bg-gradient-to-r after:from-white/10 after:to-transparent after:pointer-events-none overflow-hidden'
+                : '!bg-red-600/90 !text-white border border-red-300/20 shadow-[0_18px_40px_rgba(220,38,38,0.38)] backdrop-blur-md px-4.5 h-14 gap-2 ring-1 ring-white/10 before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-b before:from-white/20 before:via-white/5 before:to-transparent before:pointer-events-none after:absolute after:inset-0 after:rounded-full after:bg-gradient-to-r after:from-white/10 after:to-transparent after:pointer-events-none overflow-hidden'
           }`}
         >
           {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="!w-6 !h-6 !text-white" />}
-          {!isOpen && showPrompt && (
+          {!isOpen && showPrompt && !isMobileScreen && (
             <span className="whitespace-nowrap text-sm font-semibold tracking-tight !text-white">Talk with Sphere AI</span>
           )}
         </motion.button>
