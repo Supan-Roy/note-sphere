@@ -13,12 +13,18 @@ import {
   Zap,
   MoreVertical,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  X,
+  KeyRound,
+  AlertCircle
 } from "lucide-react";
 import { Room } from "../types";
 
 export function SharingRoom({ onJoinRoom, rooms, setRooms }: { onJoinRoom: (room: Room) => void, rooms: Room[], setRooms: React.Dispatch<React.SetStateAction<Room[]>> }) {
   const [isCreating, setIsCreating] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
+  const [joinError, setJoinError] = useState("");
   const [newRoom, setNewRoom] = useState({ title: "", description: "", isPublic: true });
 
   const handleCreateRoom = () => {
@@ -40,6 +46,25 @@ export function SharingRoom({ onJoinRoom, rooms, setRooms }: { onJoinRoom: (room
     setNewRoom({ title: "", description: "", isPublic: true });
   };
 
+  const handleJoinWithCode = () => {
+    const normalizedCode = joinCode.trim().toUpperCase();
+    if (!normalizedCode) {
+      setJoinError("Enter a room code to continue.");
+      return;
+    }
+
+    const matchedRoom = rooms.find((room) => room.code?.toUpperCase() === normalizedCode);
+    if (!matchedRoom) {
+      setJoinError("Invalid code. Try different.");
+      return;
+    }
+
+    setJoinError("");
+    setJoinCode("");
+    setIsJoining(false);
+    onJoinRoom(matchedRoom);
+  };
+
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -52,7 +77,15 @@ export function SharingRoom({ onJoinRoom, rooms, setRooms }: { onJoinRoom: (room
         </div>
 
         <div className="flex gap-3">
-          <button className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 text-[var(--text-dim)] font-bold hover:bg-white/10 transition-all text-sm">Join with Code</button>
+          <button
+            onClick={() => {
+              setJoinError("");
+              setIsJoining(true);
+            }}
+            className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 text-[var(--text-dim)] font-bold hover:bg-white/10 transition-all text-sm"
+          >
+            Join with Code
+          </button>
           <button 
             onClick={() => setIsCreating(true)}
             className="bg-red-600 px-6 py-2 rounded-xl text-white font-bold shadow-lg shadow-red-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm flex items-center gap-2 hover:bg-red-700"
@@ -106,6 +139,86 @@ export function SharingRoom({ onJoinRoom, rooms, setRooms }: { onJoinRoom: (room
               <div className="flex gap-4 pt-4">
                 <button onClick={() => setIsCreating(false)} className="flex-1 px-6 py-3 rounded-xl bg-white/5 text-[var(--text-dim)] font-bold hover:bg-white/10 transition-all">Cancel</button>
                 <button onClick={handleCreateRoom} className="flex-1 bg-red-600 px-6 py-3 rounded-xl text-white font-bold hover:bg-red-700 transition-all">Create Room</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isJoining && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              className="glass-card w-full max-w-md p-6 space-y-5"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--accent-primary)]">Join Room</p>
+                  <h2 className="text-2xl font-bold text-[var(--text-main)]">Enter room code</h2>
+                  <p className="text-sm text-[var(--text-dim)]">Ask the room owner for the code, then paste it here.</p>
+                </div>
+                <button
+                  onClick={() => setIsJoining(false)}
+                  className="rounded-full border border-white/10 bg-white/5 p-2 text-[var(--text-dim)] transition-all hover:bg-white/10 hover:text-[var(--text-main)]"
+                  aria-label="Close join dialog"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-dim)]">Room code</label>
+                <div className="relative">
+                  <KeyRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan-400" />
+                  <input
+                    autoFocus
+                    value={joinCode}
+                    onChange={(e) => {
+                      setJoinCode(e.target.value.toUpperCase());
+                      if (joinError) setJoinError("");
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleJoinWithCode();
+                      }
+                    }}
+                    placeholder="e.g. QUAN2025"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-12 pr-4 text-sm font-mono tracking-[0.2em] text-[var(--text-main)] uppercase placeholder:text-[var(--text-dim)] focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
+                  />
+                </div>
+
+                <AnimatePresence>
+                  {joinError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300"
+                    >
+                      <AlertCircle className="h-4 w-4 shrink-0" />
+                      {joinError}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <div className="flex gap-3 pt-1">
+                <button
+                  onClick={() => setIsJoining(false)}
+                  className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-[var(--text-dim)] transition-all hover:bg-white/10"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleJoinWithCode}
+                  className="flex-1 rounded-xl bg-red-600 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-red-700"
+                >
+                  Join Room
+                </button>
               </div>
             </motion.div>
           </div>
