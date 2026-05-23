@@ -99,47 +99,47 @@ Below are representative screens from Note Sphere. Click any image to view the f
 
 - Create Note
 
-	![Create Note](public/screenshots/2_Create Note.png)
+	![Create Note](public/screenshots/2_Create_Note.png)
 
 - Semester Management
 
-	![Semester Management](public/screenshots/3_Semester Management.png)
+	![Semester Management](public/screenshots/3_Semester_Management.png)
 
 - Tasks Manager
 
-	![Tasks Manager](public/screenshots/4_Tasks Manager.png)
+	![Tasks Manager](public/screenshots/4_Tasks_Manager.png)
 
 - My Notes
 
-	![My Notes](public/screenshots/5_My Notes.png)
+	![My Notes](public/screenshots/5_My_Notes.png)
 
 - Preparation Mode
 
-	![Preparation Mode](public/screenshots/6_Prep Mode.png)
+	![Preparation Mode](public/screenshots/6_Prep_Mode.png)
 
 - Sharing Room
 
-	![Sharing Room](public/screenshots/7_Sharing Room.png)
+	![Sharing Room](public/screenshots/7_Sharing_Room.png)
 
 - AI Study Toolkit
 
-	![AI Study Toolkit](public/screenshots/8_AI Study Toolkit.png)
+	![AI Study Toolkit](public/screenshots/8_AI%20Study_Toolkit.png)
 
 - Ask Your Notes
 
-	![Ask Your Notes](public/screenshots/9_Ask Your Notes.png)
+	![Ask Your Notes](public/screenshots/9_Ask%20Your_Notes.png)
 
 - Knowledge Graph
 
-	![Knowledge Graph](public/screenshots/10_Knowledge Graph.png)
+	![Knowledge Graph](public/screenshots/10_Knowledge_Graph.png)
 
 - Trash Bin
 
-	![Trash Bin](public/screenshots/11_Trash Bin.png)
+	![Trash Bin](public/screenshots/11_Trash_Bin.png)
 
 - Holmes Scanner
 
-	![Holmes Scanner](public/screenshots/12_Holmes Scanner.png)
+	![Holmes Scanner](public/screenshots/12_Holmes_Scanner.png)
 
 
 ## Developed By
