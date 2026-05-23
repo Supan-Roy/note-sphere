@@ -53,7 +53,7 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
           title="Return to Dashboard"
         >
           <div className={`${isCollapsed ? "h-9 w-9 rounded-lg" : "h-10 w-10 rounded-lg"} bg-[var(--accent-primary)] flex items-center justify-center shadow-none`}>
-            <GraduationCap className={`text-white ${isCollapsed ? "w-5 h-5" : "w-6 h-6"}`} />
+            <GraduationCap className={`sidebar-logo-icon !text-white !fill-white !stroke-white ${isCollapsed ? "w-5 h-5" : "w-6 h-6"}`} />
           </div>
           {!isCollapsed && <span className="font-semibold text-[var(--text-main)]">Note Sphere</span>}
         </button>
@@ -83,7 +83,7 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
                 isPreparation
                   ? isActive
                     ? "bg-gradient-to-r from-pink-600 via-fuchsia-600 to-amber-500 text-white font-bold border border-fuchsia-400/40 shadow-[0_10px_25px_rgba(217,70,239,0.3)]"
-                    : "border border-fuchsia-500/25 text-fuchsia-300 hover:border-fuchsia-400 hover:bg-gradient-to-r hover:from-fuchsia-500/20 hover:to-pink-500/10 font-medium"
+                    : "sidebar-preparation border border-fuchsia-500/25 text-fuchsia-300 hover:border-fuchsia-400 hover:bg-gradient-to-r hover:from-fuchsia-500/20 hover:to-pink-500/10 font-medium"
                   : isActive 
                     ? "bg-[var(--bg-elevated)] text-[var(--accent-primary)] border-[var(--border-main)]" 
                     : "text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)] border-transparent"
@@ -106,9 +106,9 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
             className={`sidebar-nav-item w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-all duration-300 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white font-extrabold border border-cyan-400/40 shadow-[0_5px_22px_rgba(6,182,212,0.35)] hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 hover:scale-[1.01]`}
             title={isCollapsed ? "Holmes Scanner" : undefined}
           >
-            <Scan className={`sidebar-nav-icon w-5 h-5 transition-transform text-white ${isHolmesActive ? "scale-110" : ""}`} />
+            <Scan className={`sidebar-nav-icon sidebar-holmes-icon !text-white !fill-white !stroke-white w-5 h-5 transition-transform ${isHolmesActive ? "scale-110" : ""}`} />
             {!isCollapsed && (
-              <span className="sidebar-nav-label text-sm font-bold tracking-wide flex items-center gap-1.5 text-white">
+              <span className="sidebar-nav-label text-sm font-bold tracking-wide flex items-center gap-1.5 !text-white">
                 Holmes Scanner
                 <span className="shrink-0 flex h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_8px_#22d3ee]" />
               </span>

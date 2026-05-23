@@ -180,6 +180,22 @@
     stroke: currentColor !important;
   }
 
+  svg.sidebar-logo-icon,
+  svg.sidebar-holmes-icon {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+
+  :root.light .sidebar-preparation {
+    color: #7e22ce !important;
+  }
+
+  :root.light .sidebar-preparation .sidebar-nav-label,
+  :root.light .sidebar-preparation .sidebar-nav-icon {
+    color: #7e22ce !important;
+  }
+
   /* Scrollbar styling */
   .sidebar-scroll {
     scrollbar-width: thin;
