@@ -16,6 +16,7 @@ import {
   GraduationCap,
   Crown,
   Sparkles,
+  Scan,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -41,12 +42,14 @@ const navItems = [
 ];
 
 export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse, onBuyPlan, isMobileScreen }: SidebarProps) {
+  const isHolmesActive = activeTab === "holmes-scanner";
+
   return (
-    <aside className={`${isCollapsed ? "w-20" : "w-64"} glass-sidebar h-screen fixed inset-y-0 left-0 lg:sticky lg:top-0 lg:self-start flex flex-col p-4 z-30 relative transition-all duration-300`}>
+    <aside className={`${isCollapsed ? "w-20" : "w-64"} glass-sidebar h-screen fixed inset-y-0 left-0 lg:sticky lg:top-0 lg:self-start flex flex-col p-4 z-50 relative transition-all duration-300`}>
       <div className={`relative mb-8 flex flex-col ${isCollapsed ? "items-center gap-3" : "gap-3 px-2"}`}>
         <button
           onClick={() => setActiveTab("dashboard")}
-          className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3"} rounded-lg transition-all hover:bg-[var(--bg-elevated)] active:scale-95`}
+          className="w-full flex items-center gap-3 rounded-lg transition-all hover:bg-[var(--bg-elevated)] active:scale-95"
           title="Return to Dashboard"
         >
           <div className={`${isCollapsed ? "h-9 w-9 rounded-lg" : "h-10 w-10 rounded-lg"} bg-[var(--accent-primary)] flex items-center justify-center shadow-none`}>
@@ -79,22 +82,42 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, onToggleCollapse
               className={`sidebar-nav-item w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2 rounded-lg transition-all duration-200 ${
                 isPreparation
                   ? isActive
-                    ? "border border-fuchsia-400/30 bg-gradient-to-r from-fuchsia-500/20 via-rose-500/15 to-amber-400/10 text-[var(--text-main)] shadow-[0_10px_30px_rgba(217,70,239,0.12)]"
-                    : "border border-fuchsia-400/15 bg-gradient-to-r from-fuchsia-500/10 via-rose-500/10 to-amber-400/5 text-[var(--text-main)] hover:border-fuchsia-400/25 hover:bg-gradient-to-r hover:from-fuchsia-500/15 hover:via-rose-500/12 hover:to-amber-400/10"
+                    ? "bg-gradient-to-r from-pink-600 via-fuchsia-600 to-amber-500 text-white font-bold border border-fuchsia-400/40 shadow-[0_10px_25px_rgba(217,70,239,0.3)]"
+                    : "border border-fuchsia-500/25 text-fuchsia-300 hover:border-fuchsia-400 hover:bg-gradient-to-r hover:from-fuchsia-500/20 hover:to-pink-500/10 font-medium"
                   : isActive 
                     ? "bg-[var(--bg-elevated)] text-[var(--accent-primary)] border-[var(--border-main)]" 
                     : "text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-elevated)] border-transparent"
               }`}
               title={isCollapsed ? item.label : undefined}
             >
-              <Icon className={`sidebar-nav-icon w-5 h-5 transition-transform ${isPreparation ? "text-[var(--text-main)]" : isActive ? "text-[var(--accent-primary)]" : ""}`} />
+              <Icon className={`sidebar-nav-icon w-5 h-5 transition-transform ${isPreparation ? (isActive ? "text-white" : "text-fuchsia-400") : isActive ? "text-[var(--accent-primary)]" : ""}`} />
               {!isCollapsed && <span className="sidebar-nav-label text-sm font-medium">{item.label}</span>}
               {isActive && !isCollapsed && (
-                <div className={`ml-auto w-1.5 h-1.5 rounded-full ${isPreparation ? "bg-amber-300" : "bg-[var(--accent-primary)]"}`} />
+                <div className={`ml-auto w-1.5 h-1.5 rounded-full ${isPreparation ? "bg-amber-300 animate-pulse" : "bg-[var(--accent-primary)]"}`} />
               )}
             </button>
           );
         })}
+
+        {/* Separated & Vivid-Colored Special Holmes Scanner Menu Option right after Trash Bin */}
+        <div className="pt-2.5 mt-2.5 border-t border-[var(--border-main)]/40">
+          <button
+            onClick={() => setActiveTab("holmes-scanner")}
+            className={`sidebar-nav-item w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-all duration-300 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white font-extrabold border border-cyan-400/40 shadow-[0_5px_22px_rgba(6,182,212,0.35)] hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 hover:scale-[1.01]`}
+            title={isCollapsed ? "Holmes Scanner" : undefined}
+          >
+            <Scan className={`sidebar-nav-icon w-5 h-5 transition-transform text-white ${isHolmesActive ? "scale-110" : ""}`} />
+            {!isCollapsed && (
+              <span className="sidebar-nav-label text-sm font-bold tracking-wide flex items-center gap-1.5 text-white">
+                Holmes Scanner
+                <span className="shrink-0 flex h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_8px_#22d3ee]" />
+              </span>
+            )}
+            {isHolmesActive && !isCollapsed && (
+              <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            )}
+          </button>
+        </div>
       </nav>
 
       <div className="relative mt-auto pt-4 border-t border-[var(--border-main)]">

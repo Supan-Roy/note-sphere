@@ -227,21 +227,21 @@ export function Dashboard({ notes, trashItems = [], onNoteOpen, onChatOpen, onCr
           <div className="flex flex-wrap gap-3">
             <button
               onClick={onCreateNote}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-sm px-5 py-3 text-sm font-semibold text-[var(--text-main)] hover:bg-white/10 transition-all"
+              className="inline-flex items-center gap-2 rounded-xl border border-indigo-500/30 bg-indigo-600 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-600/30 transition-all duration-300"
             >
               <PenLine className="w-4 h-4" />
               Create Note
             </button>
             <button
               onClick={onUploadFiles}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-sm px-4 py-3 text-sm font-semibold text-[var(--text-main)] hover:bg-white/10 transition-all"
+              className="inline-flex items-center gap-2 rounded-xl border border-teal-500/30 bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-600/30 transition-all duration-300"
             >
               <UploadCloud className="w-4 h-4" />
               Upload
             </button>
             <button
               onClick={onViewNotes}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-[var(--text-main)] hover:bg-white/10 transition-all"
+              className="inline-flex items-center gap-2 rounded-xl border border-sky-500/30 bg-sky-600 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-600/30 transition-all duration-300"
             >
               <LibraryBig className="w-4 h-4" />
               View Notes

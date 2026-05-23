@@ -171,6 +171,10 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
   const [aiStatus, setAiStatus] = useState("Sphere AI is ready to help.");
   const [aiBusy, setAiBusy] = useState(false);
   const [recentActions, setRecentActions] = useState<string[]>(["Draft opened", "Workspace ready"]);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isGeneratingNote, setIsGeneratingNote] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [isPromptFocused, setIsPromptFocused] = useState(false);
   const editorRef = useRef<HTMLDivElement | null>(null);
   const editorShellRef = useRef<HTMLDivElement | null>(null);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
@@ -194,6 +198,62 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
 
   const pushRecentAction = (action: string) => {
     setRecentActions((prev) => [action, ...prev.filter((item) => item !== action)].slice(0, 4));
+  };
+
+  const generateNoteWithAi = async () => {
+    if (!aiPrompt.trim()) return;
+    
+    setIsGeneratingNote(true);
+    setAiError(null);
+    setAiBusy(true);
+    setAiStatus("Generating beautiful study notes for you...");
+    pushRecentAction("Generating with AI");
+
+    try {
+      const response = await fetch("/api/generate-note", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: aiPrompt,
+          currentTitle: title,
+          currentContent: noteText(),
+        }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to generate note");
+      }
+
+      const data = await response.json();
+      
+      if (data.title) {
+        setTitle(data.title);
+      }
+      
+      if (data.content) {
+        if (editorRef.current) {
+          editorRef.current.innerHTML = data.content;
+        }
+        setContent(data.content);
+        setAiStatus("Note generated successfully! Feel free to edit.");
+        pushRecentAction("AI Note Generated");
+        setShareState("✓ Note generated with AI");
+      } else {
+        throw new Error("Invalid response format from server");
+      }
+      
+      setAiPrompt("");
+    } catch (err: any) {
+      console.error(err);
+      setAiError(err.message || "Something went wrong.");
+      setAiStatus("AI generation failed. Please try again.");
+    } finally {
+      setIsGeneratingNote(false);
+      setAiBusy(false);
+    }
   };
 
   const updateMarks = () => {
@@ -738,6 +798,87 @@ export function NoteComposer({ onBack, onSaveCloud, onViewNotes }: NoteComposerP
           </main>
 
           <aside className="space-y-5">
+            {/* Generate with AI Card */}
+            <section className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg relative overflow-hidden">
+              <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-[var(--accent-primary)]/10 blur-2xl pointer-events-none" />
+              
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] text-[var(--accent-primary)]">
+                  <Wand2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-[var(--accent-primary)]">AI Note Generator</p>
+                  <h2 className="text-lg font-semibold text-[var(--text-main)]">Generate with AI</h2>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="ai-prompt-input" className="sr-only">Describe note prompt</label>
+                  <div className={`relative overflow-hidden rounded-xl p-[2px] bg-[var(--border-main)] transition-all duration-300 ${isPromptFocused ? "shadow-[0_0_15px_rgba(66,133,244,0.2)]" : "shadow-md"}`}>
+                    {/* Multi-color Google Colors spinning wheel in the background */}
+                    <div 
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[350%] h-[350%] aspect-square origin-center z-0 animate-spin"
+                      style={{ 
+                        backgroundImage: 'conic-gradient(from 0deg, #4285F4, #EA4335, #FBBC05, #34A853, #4285F4)',
+                        animationDuration: isGeneratingNote ? '1s' : isPromptFocused ? '2s' : '3.5s',
+                        opacity: 1,
+                        transition: 'opacity 0.4s ease-in-out',
+                      }} 
+                    />
+                    {/* Inner textarea container covering the spinning background */}
+                    <div className="relative z-10 rounded-[10px] bg-[var(--bg-elevated)] overflow-hidden">
+                      <textarea
+                        id="ai-prompt-input"
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                        onFocus={() => setIsPromptFocused(true)}
+                        onBlur={() => setIsPromptFocused(false)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            generateNoteWithAi();
+                          }
+                        }}
+                        placeholder="Describe what note you want to generate...\n(e.g., 'A study guide for celular respiration split in phases')"
+                        maxLength={500}
+                        disabled={isGeneratingNote}
+                        className="w-full h-24 bg-[var(--bg-elevated)] p-3 text-sm text-[var(--text-main)] outline-none resize-none border-0 focus:ring-0 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center mt-1 px-1">
+                    <span className="text-[10px] text-[var(--text-dim)]">Enter to generate</span>
+                    <span className="text-[10px] text-[var(--text-dim)]">{aiPrompt.length}/500</span>
+                  </div>
+                </div>
+
+                {aiError && (
+                  <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+                    {aiError}
+                  </div>
+                )}
+
+                <button
+                  onClick={generateNoteWithAi}
+                  disabled={isGeneratingNote || !aiPrompt.trim()}
+                  className={`w-full inline-flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold text-white transition-all duration-300 ${isGeneratingNote || !aiPrompt.trim() ? "bg-emerald-600 opacity-60 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-600/30"}`}
+                >
+                  {isGeneratingNote ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Generating note...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      Generate with AI
+                    </>
+                  )}
+                </button>
+              </div>
+            </section>
+
             <section className="rounded-lg border border-[var(--border-main)] bg-[var(--bg-card)] p-5 shadow-lg">
               <div className="mb-4 flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[var(--border-main)] bg-[var(--bg-elevated)] text-[var(--accent-primary)]">

@@ -448,6 +448,137 @@ app.post("/api/handwritten-ocr", upload.single("file"), async (req, res) => {
   }
 });
 
+// 6. Generate Note with AI
+app.post("/api/generate-note", async (req, res) => {
+  try {
+    const { prompt, currentContent, currentTitle } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required" });
+    }
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: {
+        parts: [
+          {
+            text: `You are an expert academic writer and study assistant for NOTEFLOW.
+Generate a comprehensive, premium quality study note or guide based on the user's prompt.
+Provide the response in JSON format matching the schema below.
+
+User's prompt: "${prompt}"
+${currentTitle && currentTitle !== "Untitled Note" ? `Current Note Title: "${currentTitle}"` : ""}
+${currentContent ? `Current Note Content (optional context): "${currentContent}"` : ""}
+
+Use clean, semantic HTML inside 'content' for rich-text rendering. Do not write raw markdown inside 'content', instead use HTML tags:
+- Use <h2> for section subheadings
+- Use <p> for body paragraphs (ensure healthy spacing and structure)
+- Use <ul> and <li> for bullet lists, <ol> and <li> for numbered lists
+- Use <blockquote> for quotes/key highlights
+- Highlight important concepts with <strong>
+Do NOT include the title in the HTML 'content'—only put the title in the 'title' field.`
+          }
+        ]
+      },
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING, description: "A concise, academic, and engaging title for the note." },
+            content: { type: Type.STRING, description: "The beautiful HTML content of the note (subheadings, lists, quotes)." },
+            summary: { type: Type.STRING, description: "A brief 2-sentence summary of the note." },
+            tags: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3 to 5 relevant study tags." }
+          },
+          required: ["title", "content", "summary", "tags"]
+        }
+      }
+    });
+
+    try {
+      const respText = response.text || "{}";
+      const cleaned = respText.replace(/```json/g, "").replace(/```/g, "").trim();
+      res.json(JSON.parse(cleaned));
+    } catch (parseError) {
+      console.error("Parse error (generate note):", response.text);
+      res.status(500).json({ error: "Failed to parse AI response as JSON", raw: response.text });
+    }
+  } catch (error: any) {
+    console.error("Error generating note with AI:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 7. Holmes Scanner Workspace Analyzer
+app.post("/api/scan-workspace", async (req, res) => {
+  try {
+    const { prompt, notes, tasks, rooms, semesters, trashItems } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: "Scan query or prompt is required" });
+    }
+
+    const systemPrompt = `You are Mr. Sherlock Holmes, the legendary consulting detective, acting as the intelligent space scanner for NOTE SPHERE.
+Analyze the user's modern academic workspace data below to answer their exact query with brilliant deduction and sharp observations.
+Structure your reply in a neat JSON object with deductive wit, charm, and accurate scanning.
+
+WORKSPACE DATA PROVIDED:
+- Notes list: ${JSON.stringify(notes || [])}
+- Tasks scheduled: ${JSON.stringify(tasks || [])}
+- Study rooms (shares of files): ${JSON.stringify(rooms || [])}
+- Semester & Course structure: ${JSON.stringify(semesters || [])}
+- Trash bin (deleted items): ${JSON.stringify(trashItems || [])}
+
+USER SCAN QUERY: "${prompt}"
+
+Provide your professional investigation report in JSON format matching this schema:
+{
+  "summary": "A brief 2-3 sentence introductory deduction in Holmes' classic elegant literary style.",
+  "markdownResult": "Detailed investigations and findings formatted in beautiful Markdown. Point out specific note names, missing topics, files available, notes needing improvement (e.g. low completeness or readiness scores), or active link/room sharing status. Be highly structured with lists, code boxes, or highlight symbols.",
+  "findingsCount": 12, // number of files/tasks/issues analyzed or detected
+  "threatLevel": "Exemplary Organization" | "Minor Inefficiencies" | "Critical Material Missing" | "Active Case File",
+  "recommendations": ["Actionable step 1", "Actionable step 2", "Actionable step 3"]
+}`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: {
+        parts: [
+          {
+            text: systemPrompt
+          }
+        ]
+      },
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            summary: { type: Type.STRING, description: "Sherlock Holmes' diagnostic assessment summary" },
+            markdownResult: { type: Type.STRING, description: "Thorough investigative findings in Markdown format" },
+            findingsCount: { type: Type.INTEGER, description: "Count of details or items investigated" },
+            threatLevel: { type: Type.STRING, description: "Detective rating of the workspace status" },
+            recommendations: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Specific steps suggested to perfect materials" }
+          },
+          required: ["summary", "markdownResult", "findingsCount", "threatLevel", "recommendations"]
+        }
+      }
+    });
+
+    try {
+      const respText = response.text || "{}";
+      const cleaned = respText.replace(/```json/g, "").replace(/```/g, "").trim();
+      res.json(JSON.parse(cleaned));
+    } catch (parseError) {
+      console.error("Parse error (scan workspace):", response.text);
+      res.status(500).json({ error: "Failed to parse Workspace Scan as JSON", raw: response.text });
+    }
+  } catch (error: any) {
+    console.error("Error running workspace scan:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Vite Middleware for Dev, Asset Serving for Prod
 async function setupVite() {
   if (process.env.NODE_ENV !== "production") {

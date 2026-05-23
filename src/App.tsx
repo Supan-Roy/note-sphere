@@ -20,6 +20,7 @@ import { NoteComposer } from "./components/NoteComposer";
 import { TaskaBoard } from "./components/TaskaBoard";
 import { PlanPage } from "./components/PlanPage";
 import { Footer } from "./components/Footer";
+import { HolmesScanner } from "./components/HolmesScanner";
 import { Note, Room, Semester, TaskItem, TrashItem } from "./types";
 
 export default function App() {
@@ -444,6 +445,8 @@ export default function App() {
         return <PlanPage onBack={() => navigateToTab("dashboard")} />;
       case "shared-notes":
         return <SharingRoom rooms={rooms} setRooms={setRooms} onJoinRoom={(room) => setSelectedRoom(room)} />;
+      case "holmes-scanner":
+        return <HolmesScanner notes={notes} tasks={tasks} rooms={rooms} semesters={semesters} trashItems={trashItems} />;
       default:
         return (
           <div className="p-8">
